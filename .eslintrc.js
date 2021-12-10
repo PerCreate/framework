@@ -15,6 +15,6 @@ module.exports = {
 		'comma-dangle': 'off',
 		'require-jsdoc': 'off',
 		'indent': ['error', 'tab'],
-		"disallowTabs": false
+		"disallowTabs": 0
 	}
 }
