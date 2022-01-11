@@ -17,4 +17,12 @@ export class Formula extends ExcelComponent {
 			<div class="input" contenteditable spellcheck="false"></div>
 		`;
 	}
+
+	onInput(event) {
+		console.log(event, this);
+	}
+
+	onDestroy(event) {
+		console.log('destroyed', this);
+	}
 }
