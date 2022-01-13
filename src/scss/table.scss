@@ -1,63 +1,97 @@
 @import "variables";
 @import "mixins";
 
+@mixin resize {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	opacity: 0;
+	background: $primary-color;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
 .excel__table {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: $header-height + $toolbar-height + $formula-height;
-    overflow-x: auto;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: $header-height + $toolbar-height + $formula-height;
+	overflow-x: auto;
 
-    .row {
-        display: flex;
-        flex-direction: row;
-        min-height: 20px;
-        height: $row-height;
-    }
+	.row {
+		display: flex;
+		flex-direction: row;
+		min-height: 20px;
+		height: $row-height;
+	}
 
-    .row-info {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-width: $info-cell-width;
-        height: 100%;
-        border: 1px solid $border-color;
-        background: #f8f9fa;
-        border-top: none;
-    }
+	.row-info {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-width: $info-cell-width;
+		height: 100%;
+		border: 1px solid $border-color;
+		background: #f8f9fa;
+		border-top: none;
 
-    .row-data {
-        display: flex;
-    }
+		.row-resize {
+			left: 0;
+			height: 4px;
+			@include resize();
 
-    .column {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #f8f9fa;
-        min-width: 40px;
-        width: $cell-width;
-        border: 1px solid $border-color;
-        border-top: none;
-        border-left: none;
-        height: 100%;
-    }
+			&:hover {
+				cursor: row-resize;
+			}
+		}
+	}
 
-    .cell {
-        min-width: 40px;
-        padding: 5px;
-        width: $cell-width;
-        height: 100%;
-        border: 1px solid #e2e2e3;
-        border-left: none;
-        border-top: none;
-        white-space: nowrap;
-        outline: none;
+	.row-data {
+		display: flex;
+	}
 
-        &.selected {
-            border: none;
-            outline: 2px solid #3c74ff;
-            z-index: 2;
-        }
-    }
+	.column {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background: #f8f9fa;
+		min-width: 40px;
+		width: $cell-width;
+		border: 1px solid $border-color;
+		border-top: none;
+		border-left: none;
+		height: 100%;
+
+		.col-resize {
+			top: 0;
+			width: 4px;
+			@include resize();
+
+			&:hover {
+				cursor: col-resize;
+			}
+		}
+	}
+
+	.cell {
+		min-width: 40px;
+		padding: 5px;
+		width: $cell-width;
+		height: 100%;
+		border: 1px solid #e2e2e3;
+		border-left: none;
+		border-top: none;
+		white-space: nowrap;
+		outline: none;
+
+		&.selected {
+			border: none;
+			outline: 2px solid $primary-color;
+			z-index: 2;
+		}
+	}
 }
