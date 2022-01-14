@@ -5,16 +5,21 @@ const CODES = {
 
 function createCell(cell) {
 	return `
-		<div class="cell">${cell}</div>
+		<div class="cell"  contenteditable>${cell}</div>
 	`;
 }
 
 function createCol(col) {
 	return `
-		<div class="column">
-			${col}
-			<div class="col-resize" data-resize="col"></div>
-		</div>
+			<div
+				class="column"
+				unselectable="on"
+				onselectstart="return false;"
+				onmousedown="return false;"
+				>
+				${col}
+				<div class="col-resize" data-resize="col"></div>
+			</div>
 	`;
 }
 
@@ -23,15 +28,20 @@ function createRow(index, content) {
 
 	return `
 		<div class="row">
-			<div class="row-info">
+			<div
+				class="row-info"
+				unselectable="on"
+				onselectstart="return false;"
+				onmousedown="return false;"
+				>
 				${index ? index : ''}
 				${resize}
-				</div>
+			</div>
 			<div class="row-data">${content}</div>
 		</div>
 	`;
 }
-export function createTable(rowsCount = 15) {
+export function createTable(rowsCount = 150) {
 	const colsCount = CODES.Z - CODES.A + 1;
 	const rows = [];
 

@@ -12,19 +12,29 @@
 		opacity: 1;
 	}
 }
-
+//working сделать нормальный скролл таблицы. Сейчас скроллится html, а должна только таблица. Скорее всего это из-за position:absolute у элементов в excel
 .excel__table {
 	position: absolute;
 	left: 0;
 	right: 0;
 	top: $header-height + $toolbar-height + $formula-height;
-	overflow-x: auto;
+	// height: calc(100vh - #{$header-height} + #{$toolbar-height} + #{$formula-height});
+	overflow: auto;
 
 	.row {
+		position: relative;
 		display: flex;
 		flex-direction: row;
 		min-height: 20px;
 		height: $row-height;
+
+		&:first-child {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			-o-user-select: none;
+		}
 	}
 
 	.row-info {
@@ -74,6 +84,14 @@
 			&:hover {
 				cursor: col-resize;
 			}
+		}
+
+		&:first-child {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			-o-user-select: none;
 		}
 	}
 
