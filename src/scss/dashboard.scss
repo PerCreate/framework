@@ -11,8 +11,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #fff;
-		box-shadow: 0 2px 5px 2px rgba(60, 64, 67, .15);
+		box-shadow: 0 2px 5px 2px rgba(60, 64, 67, 0.15);
+		background-color: #fff;
 		z-index: 1000;
 	}
 
@@ -52,7 +52,7 @@
 		padding: 1rem;
 	}
 
-	&__list-header{
+	&__list-header {
 		display: flex;
 		justify-content: space-between;
 		color: #202124;

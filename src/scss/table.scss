@@ -18,8 +18,8 @@
 	left: 0;
 	right: 0;
 	top: $header-height + $toolbar-height + $formula-height;
-	// height: calc(100vh - #{$header-height} + #{$toolbar-height} + #{$formula-height});
-	overflow: auto;
+	height: calc(100vh - (#{$header-height} + #{$toolbar-height} + #{$formula-height}));
+	overflow: scroll;
 
 	.row {
 		position: relative;

@@ -12,7 +12,13 @@ export class Table extends ExcelComponent {
 	}
 
 	toHTML() {
-		return createTable();
+		const tableContent = createTable();
+		const table = `
+			<div class="table">
+				${tableContent}
+			</div>
+		`;
+		return table;
 	}
 
 	onMousedown(event) {

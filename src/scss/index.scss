@@ -13,20 +13,17 @@
 	box-sizing: border-box;
 }
 
-html {
-	// overflow: hidden;
-}
 body {
 	width: 100%;
 	font-family: "Roboto", sans-serif;
 	font-size: 12px;
-}
 
-.excel {
-	// position: relative;
-	// overflow: hidden;
-	color: #888;
-	height: 100%;
-	max-width: 100%;
-	// font-style: 0.8rem;
+	.excel {
+		position: relative;
+		overflow: hidden;
+		color: #888;
+		height: 100vh;
+		max-width: 100%;
+		// font-style: 0.8rem;
+	}
 }
