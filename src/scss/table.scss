@@ -12,7 +12,7 @@
 		opacity: 1;
 	}
 }
-//working сделать нормальный скролл таблицы. Сейчас скроллится html, а должна только таблица. Скорее всего это из-за position:absolute у элементов в excel
+
 .excel__table {
 	position: absolute;
 	left: 0;

@@ -8,7 +8,7 @@
 	 */
 export default (event, resizeElement) => {
 	const el = event.target;
-	const table = el.closest('.excel__table');
+	const table = el.closest('.excel__table>.table');
 	const row = el.closest('.row');
 	const col = el.closest('.column');
 	var currentPosition, currentValue, minValue;
