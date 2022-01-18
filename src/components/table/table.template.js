@@ -2,17 +2,24 @@ const CODES = {
 	A: 65,
 	Z: 90
 };
-
-function createCell(cell) {
+//working добавить resizer для увеличения cell, описать метод resize для cell
+function createCell(index, cell) {
 	return `
-		<div class="cell"  contenteditable>${cell}</div>
+		<div class="cell" data-cell=${index} contenteditable>
+			${cell}
+			<div class="text" data-cell="text"></div>
+			<div class="cell-selector" data-cell="selector">
+				<div class="selector" data-cell="selector"></div>
+			</div>
+		</div>
 	`;
 }
 
-function createCol(col) {
+function createCol(index, col) {
 	return `
 			<div
 				class="column"
+				data-col=${index}
 				unselectable="on"
 				onselectstart="return false;"
 				onmousedown="return false;"
@@ -50,7 +57,7 @@ export function createTable(rowsCount = 150) {
 		.map((el, index) => {
 			return String.fromCharCode(CODES.A + index);
 		})
-		.map(createCol)
+		.map((el, index) => createCol(index + 1, el))
 		.join('');
 
 	rows.push(createRow(null, cols));
@@ -58,7 +65,7 @@ export function createTable(rowsCount = 150) {
 	for (let i = 0; i < rowsCount; i += 1) {
 		const cells = new Array(colsCount)
 			.fill('')
-			.map(createCell)
+			.map((el, index) => createCell(index + 1, el))
 			.join('');
 
 		rows.push(createRow(i + 1, cells));
