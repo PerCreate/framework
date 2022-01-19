@@ -3,17 +3,23 @@ const CODES = {
 	Z: 90
 };
 //working добавить resizer для увеличения cell, описать метод resize для cell
-function createCell(index, cell) {
-	return `
-		<div class="cell" data-cell=${index} contenteditable>
+function createCell(rowIndex) {
+
+	return (cell, index) => `<div
+			class="cell" 
+			contenteditable
+			data-cell=${index}
+			data-id=${rowIndex}:${index}
+			>
 			${cell}
 			<div class="text" data-cell="text"></div>
-			<div class="cell-selector" data-cell="selector">
+			<div class="cell-selector" data-cell="selector" contenteditable="false">
 				<div class="selector" data-cell="selector"></div>
 			</div>
 		</div>
 	`;
-}
+};
+
 
 function createCol(index, col) {
 	return `
@@ -62,13 +68,13 @@ export function createTable(rowsCount = 150) {
 
 	rows.push(createRow(null, cols));
 
-	for (let i = 0; i < rowsCount; i += 1) {
+	for (let row = 0; row < rowsCount; row += 1) {
 		const cells = new Array(colsCount)
 			.fill('')
-			.map((el, index) => createCell(index + 1, el))
+			.map(createCell(row))
 			.join('');
 
-		rows.push(createRow(i + 1, cells));
+		rows.push(createRow(row + 1, cells));
 	}
 
 	return rows.join('');

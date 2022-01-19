@@ -1,6 +1,8 @@
 import { ExcelComponent } from "../../core/ExcelComponent";
 import tableResize from "./table.resize";
 import { createTable } from "./table.template";
+import { TableSelection } from '@/components/table/TableSelection';
+import { $ } from "../../core/dom";
 
 export class Table extends ExcelComponent {
 	static className = 'excel__table';
@@ -12,7 +14,7 @@ export class Table extends ExcelComponent {
 	}
 
 	toHTML() {
-		const tableContent = createTable();
+		const tableContent = createTable(150);
 		const table = `
 			<div class="table">
 				${tableContent}
@@ -21,56 +23,20 @@ export class Table extends ExcelComponent {
 		return table;
 	}
 
-	select(event) {
-		const el = event.target;
-		const table = el.closest('.excel__table>.table');
-		const cell = el.closest('.cell');
-		const allCells = table.querySelectorAll('.cell');
-		allCells.forEach(cell => cell.classList.remove('selected'));
-		cell.classList.add('selected');
+	prepare() {
+		this.selection = new TableSelection(this.$root);
 	}
 
-	selectGroup(event) {
-		const el = event.target;
-		const excel = document.querySelector('.excel');
-		const allCells = excel.querySelectorAll('.cell');
-		const startCoords = { x: event.clientX, y: event.clientY };
+	init() {
+		super.init();
 
-		const startGroupSelecting = (event) => {
-			var xPosition = event.clientX;
-			var yPosition = event.clientY;
-
-			if (startCoords.x >= xPosition) {
-				xPosition = startCoords.x;
-			}
-			if (startCoords.y >= yPosition) {
-				yPosition = startCoords.y;
-			}
-			const elUnderMouse = document.elementFromPoint(xPosition, yPosition);
-			const closestCell = elUnderMouse.closest('.cell');
-			allCells.forEach(cell => {
-				const xCell = cell.getBoundingClientRect().left;
-				const yCell = cell.getBoundingClientRect().top;
-				const conditionSelected = (xCell > startCoords.x && yCell > startCoords.y) && (xCell < xPosition && yCell < yPosition);
-				console.log(cell, xCell, yCell, xPosition, yPosition, startCoords, conditionSelected);
-				if (conditionSelected) {
-					console.log(cell);
-				}
-			});
-			closestCell && closestCell.classList.add('selected');
-		};
-
-		const remove = () => {
-			excel.removeEventListener('mousemove', startGroupSelecting);
-			excel.removeEventListener('mouseup', remove);
-		};
-
-		excel.addEventListener('mousemove', startGroupSelecting);
-		excel.addEventListener('mouseup', remove);
-	};
+		const $cell = this.$root.find('[data-id="0:0"]');
+		this.selection.select($cell);
+	}
 
 	onMousedown(event) {
-		const el = event.target;
+		var el = event.target;
+		const shiftKey = event.shiftKey;
 
 		if (el.dataset.resize) {
 			switch (el.dataset.resize) {
@@ -84,9 +50,16 @@ export class Table extends ExcelComponent {
 		}
 
 		if (el.dataset.cell) {
-			this.select(event);
 			if (el.dataset.cell === 'selector') {
-				this.selectGroup(event);
+				this.selection.selectGroup($(el), true);
+			}
+
+			const $el = $(el).closest('.cell');
+
+			if (shiftKey) {
+				this.selection.selectGroup($el);
+			} else {
+				this.selection.select($el);
 			}
 		}
 	}
