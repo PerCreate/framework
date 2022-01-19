@@ -2,7 +2,6 @@ const CODES = {
 	A: 65,
 	Z: 90
 };
-//working добавить resizer для увеличения cell, описать метод resize для cell
 function createCell(rowIndex) {
 
 	return (cell, index) => `<div

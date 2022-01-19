@@ -127,12 +127,6 @@
 			border: 2px solid $primary-color;
 			background-color: $cell-bg;
 			z-index: 3;
-
-			.cell-selector {
-				.selector {
-					display: block;
-				}
-			}
 		}
 
 		&.leftBorder {
@@ -158,6 +152,13 @@
 			border-bottom: 1px solid $primary-color;
 			background-color: $cell-bg;
 			z-index: 2;
+		}
+		&.lastCell {
+			.cell-selector {
+				.selector {
+					display: block;
+				}
+			}
 		}
 
 		.text {

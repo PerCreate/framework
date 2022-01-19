@@ -1,5 +1,4 @@
 import { $ } from "../../core/dom";
-
 export class TableSelection {
 	static selected = 'selected';
 	static groupSelected = {
@@ -8,6 +7,7 @@ export class TableSelection {
 		top: 'topBorder',
 		bottom: 'bottomBorder',
 		middle: 'middleBorder',
+		last: 'lastCell'
 	};
 
 
@@ -15,6 +15,7 @@ export class TableSelection {
 		this.group = [];
 		this.$allCells = null;
 		this.$tableRoot = $tableRoot;
+		this.currentSelectedCell = null;
 	}
 
 	// $el instanceof DOM === true
@@ -26,7 +27,9 @@ export class TableSelection {
 		this.clear();
 		const $closestCell = $($el.closest('.cell'));
 		this.group.push($closestCell);
+		this.currentSelectedCell = $closestCell;
 		$closestCell.addClass(TableSelection.selected);
+		$closestCell.addClass(TableSelection.groupSelected.last);
 	}
 
 	clear() {
@@ -34,17 +37,24 @@ export class TableSelection {
 		this.group = [];
 	}
 
-	selectGroup($el, selectorMoving = false) {
+	selectGroup($el, selectorMoving = false, shiftKey = false) {
 		$el = $($el.closest('.cell'));
 
-		var currentSelected = this.group[0];
+		var currentSelected = this.currentSelectedCell;
 		var eventCoordsElem = $el.dataset.id.split(':');
 		var eventRowIndex = +eventCoordsElem[0];
 		var eventColIndex = +eventCoordsElem[1];
 
+		if (this.group.length > 1 && !shiftKey) {
+			eventCoordsElem = currentSelected.dataset.id.split(':');
+			eventRowIndex = +eventCoordsElem[0];
+			eventColIndex = +eventCoordsElem[1];
+		}
+
 		const selectingHandler = (mouseMove = false) => {
 			var newGroup = [this.group[0]];
 			this.group.forEach(cell => cell.removeAllClassBesides('cell', 'selected'));
+
 
 			for (let i = 1; i < this.$allCells.length; i += 1) {
 				var cell = this.$allCells[i];
@@ -95,9 +105,9 @@ export class TableSelection {
 			}
 		};
 
-
 		if (selectorMoving) {
 			const startMoving = (event) => {
+				// eventCoordsElem = this.currentSelectedCell.dataset.id.split(':');
 				// Check if new cell under moving mouse has large coordinates then last coords
 				const cellUnderMouse = event.target.closest('.cell') || event.target;
 				// Check if mouse is out of bounds
@@ -120,12 +130,14 @@ export class TableSelection {
 			const endMoving = (event) => {
 				this.$tableRoot.off('mousemove', startMoving);
 				this.$tableRoot.off('mouseup', endMoving);
+				this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
 			};
 
 			this.$tableRoot.on('mousemove', startMoving);
 			this.$tableRoot.on('mouseup', endMoving);
 		} else {
 			selectingHandler();
+			this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
 		}
 	}
 

@@ -52,12 +52,13 @@ export class Table extends ExcelComponent {
 		if (el.dataset.cell) {
 			if (el.dataset.cell === 'selector') {
 				this.selection.selectGroup($(el), true);
+				return;
 			}
 
 			const $el = $(el).closest('.cell');
 
 			if (shiftKey) {
-				this.selection.selectGroup($el);
+				this.selection.selectGroup($el, false, true);
 			} else {
 				this.selection.select($el);
 			}
