@@ -105,7 +105,9 @@
 		border-left: none;
 		border-top: none;
 		white-space: nowrap;
+		line-break: strict;
 		outline: none;
+		overflow: hidden;
 
 		.cell-selector {
 			.selector {
@@ -127,6 +129,7 @@
 			border: 2px solid $primary-color;
 			background-color: $cell-bg;
 			z-index: 3;
+			overflow: visible;
 		}
 
 		&.leftBorder {

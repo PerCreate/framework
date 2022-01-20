@@ -6,10 +6,11 @@ import { $ } from "../../core/dom";
 
 export class Table extends ExcelComponent {
 	static className = 'excel__table';
+	static listKeys = ['Enter', 'Tab', 'ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'];
 
 	constructor($root) {
 		super($root, {
-			listeners: ['mousedown']
+			listeners: ['mousedown', 'keydown']
 		});
 	}
 
@@ -24,7 +25,7 @@ export class Table extends ExcelComponent {
 	}
 
 	prepare() {
-		this.selection = new TableSelection(this.$root);
+		this.selection = new TableSelection(this.$root, this);
 	}
 
 	init() {
@@ -32,6 +33,10 @@ export class Table extends ExcelComponent {
 
 		const $cell = this.$root.find('[data-id="0:0"]');
 		this.selection.select($cell);
+		const rows = this.$root.findAll('.row');
+		const cols = rows[1].findAll('.cell');
+		// we will use this numbers for index, so subtract 1
+		this.tableSize = { rows: rows.length - 1, cols: cols.length - 1 };
 	}
 
 	onMousedown(event) {
@@ -47,9 +52,7 @@ export class Table extends ExcelComponent {
 					tableResize(event, 'row');
 					break;
 			}
-		}
-
-		if (el.dataset.cell) {
+		} else if (el.dataset.cell) {
 			if (el.dataset.cell === 'selector') {
 				this.selection.selectGroup($(el), true);
 				return;
@@ -63,5 +66,12 @@ export class Table extends ExcelComponent {
 				this.selection.select($el);
 			}
 		}
+	}
+
+	onKeydown(event) {
+		const key = event.key;
+		const isSpecialKey = Table.listKeys.includes(key);
+
+		this.selection.keypress(key, isSpecialKey, event);
 	}
 }

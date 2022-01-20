@@ -9,6 +9,10 @@ class Dom {
 		return this.$el.dataset;
 	}
 
+	get id() {
+		return this.$el.dataset.id?.split(':') || null;
+	}
+
 	html(html) {
 		if (typeof html === 'string') {
 			this.$el.innerHTML = html;
@@ -21,6 +25,10 @@ class Dom {
 	clear() {
 		this.html('');
 		return this;
+	}
+
+	click(event) {
+		this.$el.focus();
 	}
 
 	find(selector) {

@@ -10,12 +10,12 @@ export class TableSelection {
 		last: 'lastCell'
 	};
 
-
-	constructor($tableRoot) {
+	constructor($tableRoot, table) {
 		this.group = [];
 		this.$allCells = null;
 		this.$tableRoot = $tableRoot;
 		this.currentSelectedCell = null;
+		this.table = table;
 	}
 
 	// $el instanceof DOM === true
@@ -34,19 +34,27 @@ export class TableSelection {
 
 	clear() {
 		this.group.forEach($cell => $cell.removeAllClassBesides('cell'));
+		if (window.getSelection) {
+			window.getSelection().removeAllRanges();
+		}
 		this.group = [];
 	}
-
+	/**
+	 * 
+	 * @param {*} $el element typeof dom
+	 * @param {*} selectorMoving boolean - is selecting happening by mousemove
+	 * @param {*} shiftKey boolean - is selecting happening by click with shiftKey
+	 */
 	selectGroup($el, selectorMoving = false, shiftKey = false) {
 		$el = $($el.closest('.cell'));
 
 		var currentSelected = this.currentSelectedCell;
-		var eventCoordsElem = $el.dataset.id.split(':');
+		var eventCoordsElem = $el.id;
 		var eventRowIndex = +eventCoordsElem[0];
 		var eventColIndex = +eventCoordsElem[1];
 
 		if (this.group.length > 1 && !shiftKey) {
-			eventCoordsElem = currentSelected.dataset.id.split(':');
+			eventCoordsElem = currentSelected.id;
 			eventRowIndex = +eventCoordsElem[0];
 			eventColIndex = +eventCoordsElem[1];
 		}
@@ -55,17 +63,18 @@ export class TableSelection {
 			var newGroup = [this.group[0]];
 			this.group.forEach(cell => cell.removeAllClassBesides('cell', 'selected'));
 
-
+			// Use for instead of forEach because we want to have opportunity to return when current
+			// cells selected and unselected(what were selected before) that save out memory(increase performance)
 			for (let i = 1; i < this.$allCells.length; i += 1) {
 				var cell = this.$allCells[i];
-				const coords = cell.dataset.id.split(':');
+				const coords = cell.id;
 				const rowIndex = +coords[0];
 				const colIndex = +coords[1];
 
 				const eventRowIndex = +eventCoordsElem[0];
 				const eventColIndex = +eventCoordsElem[1];
 
-				const selectedCoords = currentSelected.dataset.id.split(':');
+				const selectedCoords = currentSelected.id;
 				const selectedRowIndex = +selectedCoords[0];
 				const selectedColIndex = +selectedCoords[1];
 
@@ -115,7 +124,7 @@ export class TableSelection {
 					return;
 				}
 
-				var cellCoords = cellUnderMouse.dataset.id.split(':');
+				var cellCoords = $(cellUnderMouse).id;
 				var cellRowIndex = +cellCoords[0];
 				var cellColIndex = +cellCoords[1];
 
@@ -141,5 +150,71 @@ export class TableSelection {
 		}
 	}
 
+	keypress(key, isSpecialKey, event) {
+		const idCurrentCell = this.currentSelectedCell.id;
+		const rowIndex = +idCurrentCell[0];
+		const colIndex = +idCurrentCell[1];
 
+		const rowsInTable = this.table.tableSize.rows;
+		const colsInTable = this.table.tableSize.cols;
+
+		const lastCell = colIndex === colsInTable;
+		const lastRow = rowIndex === rowsInTable;
+		const firstRow = rowIndex === 0;
+		const firstCol = colIndex === 0;
+
+		const findCell = (rowIndex, colIndex) => {
+			return this.$tableRoot.find(`[data-id="${rowIndex}:${colIndex}"]`);
+		};
+
+		var nextCell;
+
+		if (!isSpecialKey) {
+			nextCell = findCell(rowIndex, colIndex).click();
+			return;
+		}
+
+		event.preventDefault();
+		switch (key) {
+			case 'Enter':
+				nextCell = findCell(rowIndex, colIndex).click();
+				break;
+			case 'Tab':
+			case 'ArrowRight':
+				if (lastCell) {
+					if (lastRow) return;
+					nextCell = findCell(rowIndex + 1, 0);
+				} else {
+					nextCell = findCell(rowIndex, colIndex + 1);
+				}
+
+				this.select(nextCell);
+				break;
+			case 'ArrowDown':
+				if (lastRow) return;
+
+				nextCell = findCell(rowIndex + 1, colIndex);
+
+				this.select(nextCell);
+				break;
+			case 'ArrowUp':
+				if (firstRow) return;
+
+				nextCell = findCell(rowIndex - 1, colIndex);
+
+				this.select(nextCell);
+				break;
+			case 'ArrowLeft':
+				if (firstCol) {
+					if (!firstRow) {
+						nextCell = findCell(rowIndex - 1, colsInTable);
+					}
+				} else {
+					nextCell = findCell(rowIndex, colIndex - 1);
+				}
+
+				this.select(nextCell);
+				break;
+		}
+	}
 }
