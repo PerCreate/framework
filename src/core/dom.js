@@ -5,6 +5,10 @@ class Dom {
 			: selector;
 	}
 
+	get dataset() {
+		return this.$el.dataset;
+	}
+
 	html(html) {
 		if (typeof html === 'string') {
 			this.$el.innerHTML = html;
@@ -17,6 +21,48 @@ class Dom {
 	clear() {
 		this.html('');
 		return this;
+	}
+
+	find(selector) {
+		return $(this.$el.querySelector(selector));
+	}
+
+	findAll(selector) {
+		const elements = this.$el.querySelectorAll(selector);
+		return Array.from(elements).map($);
+	}
+
+	closest(selector) {
+		return this.$el.closest(selector) || this.$el;
+	}
+
+	addClass(className) {
+		this.$el.classList.add(className);
+	}
+
+	removeClass(className) {
+		this.$el.classList.remove(className);
+	}
+
+	removeAllClassBesides(...classes) {
+		if (classes.length) {
+			var newClasses = [];
+
+			classes.forEach(className => {
+				if (this.$el.classList.contains(className)) {
+					newClasses.push(className);
+				}
+			});
+
+			this.$el.classList.remove(...this.$el.classList);
+
+			newClasses.forEach(className => {
+				this.$el.classList.add(className);
+
+			});
+			return;
+		}
+		this.$el.classList.remove(...this.$el.classList);
 	}
 
 	on(eventType, callback) {
