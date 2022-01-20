@@ -10,7 +10,7 @@ export class Table extends ExcelComponent {
 
 	constructor($root) {
 		super($root, {
-			listeners: ['mousedown', 'keydown']
+			listeners: ['mousedown', 'keydown', 'dblclick']
 		});
 	}
 
@@ -35,8 +35,9 @@ export class Table extends ExcelComponent {
 		this.selection.select($cell);
 		const rows = this.$root.findAll('.row');
 		const cols = rows[1].findAll('.cell');
-		// we will use this numbers for index, so subtract 1
-		this.tableSize = { rows: rows.length - 1, cols: cols.length - 1 };
+		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
+		// so rows - 2
+		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
 	}
 
 	onMousedown(event) {
@@ -58,14 +59,20 @@ export class Table extends ExcelComponent {
 				return;
 			}
 
-			const $el = $(el).closest('.cell');
+			const $el = $($(el).closest('.cell'));
 
 			if (shiftKey) {
 				this.selection.selectGroup($el, false, true);
 			} else {
+				event.preventDefault();
 				this.selection.select($el);
 			}
 		}
+	}
+
+	onDblclick(event) {
+		const closestCell = $(event.target.closest('.cell') || event.target);
+		closestCell.click();
 	}
 
 	onKeydown(event) {

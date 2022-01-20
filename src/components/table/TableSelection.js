@@ -20,9 +20,8 @@ export class TableSelection {
 
 	// $el instanceof DOM === true
 	select($el) {
-		// first click on cell will find all cells in the table
-		if (!this.$allCells) {
-			this.$allCells = this.$tableRoot.findAll('.cell');
+		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
+			return;
 		}
 		this.clear();
 		const $closestCell = $($el.closest('.cell'));
@@ -30,10 +29,17 @@ export class TableSelection {
 		this.currentSelectedCell = $closestCell;
 		$closestCell.addClass(TableSelection.selected);
 		$closestCell.addClass(TableSelection.groupSelected.last);
+
+		// first click on cell will find all cells in the table
+		if (!this.$allCells) {
+			this.$allCells = this.$tableRoot.findAll('.cell');
+			$closestCell.click();
+		}
 	}
 
 	clear() {
 		this.group.forEach($cell => $cell.removeAllClassBesides('cell'));
+		// Delete all cursor selecting from page
 		if (window.getSelection) {
 			window.getSelection().removeAllRanges();
 		}
@@ -167,17 +173,31 @@ export class TableSelection {
 			return this.$tableRoot.find(`[data-id="${rowIndex}:${colIndex}"]`);
 		};
 
+		const isSelectedElementFocused = () => {
+			const idActiveElement = document.activeElement?.dataset?.id.split(':');
+			const rowActiveElement = +idActiveElement[0];
+			const colActiveElement = +idActiveElement[1];
+			return rowActiveElement === rowIndex && colActiveElement === colIndex;
+		};
+
 		var nextCell;
 
 		if (!isSpecialKey) {
-			nextCell = findCell(rowIndex, colIndex).click();
+			nextCell = findCell(rowIndex, colIndex);
+			nextCell.click(event);
 			return;
 		}
 
 		event.preventDefault();
 		switch (key) {
 			case 'Enter':
-				nextCell = findCell(rowIndex, colIndex).click();
+				if (isSelectedElementFocused()) {
+					if (lastRow) return;
+					nextCell = findCell(rowIndex + 1, colIndex);
+					this.select(nextCell);
+				} else {
+					findCell(rowIndex, colIndex).click();
+				}
 				break;
 			case 'Tab':
 			case 'ArrowRight':
@@ -187,21 +207,16 @@ export class TableSelection {
 				} else {
 					nextCell = findCell(rowIndex, colIndex + 1);
 				}
-
 				this.select(nextCell);
 				break;
 			case 'ArrowDown':
 				if (lastRow) return;
-
 				nextCell = findCell(rowIndex + 1, colIndex);
-
 				this.select(nextCell);
 				break;
 			case 'ArrowUp':
 				if (firstRow) return;
-
 				nextCell = findCell(rowIndex - 1, colIndex);
-
 				this.select(nextCell);
 				break;
 			case 'ArrowLeft':
@@ -212,7 +227,6 @@ export class TableSelection {
 				} else {
 					nextCell = findCell(rowIndex, colIndex - 1);
 				}
-
 				this.select(nextCell);
 				break;
 		}

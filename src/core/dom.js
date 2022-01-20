@@ -28,7 +28,8 @@ class Dom {
 	}
 
 	click(event) {
-		this.$el.focus();
+		const isCurrentElemActive = document.activeElement.isEqualNode(this.$el);
+		!isCurrentElemActive && window.setTimeout(() => this.$el.focus(), 0);
 	}
 
 	find(selector) {
