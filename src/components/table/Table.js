@@ -8,9 +8,11 @@ export class Table extends ExcelComponent {
 	static className = 'excel__table';
 	static listKeys = ['Enter', 'Tab', 'ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'];
 
-	constructor($root) {
+	constructor($root, options) {
 		super($root, {
-			listeners: ['mousedown', 'keydown', 'dblclick']
+			name: 'Table',
+			listeners: ['mousedown', 'keydown', 'dblclick'],
+			...options
 		});
 	}
 
@@ -38,6 +40,7 @@ export class Table extends ExcelComponent {
 		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
 		// so rows - 2
 		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
+		this.emitter.listen('formulaInput', text => this.selection.currentSelectedCell.text(text))
 	}
 
 	onMousedown(event) {
