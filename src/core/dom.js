@@ -23,7 +23,8 @@ class Dom {
 	}
 
 	text(text) {
-		this.$el.innerText = text
+		const textContainer = this.$el.querySelector('.text');
+		textContainer.innerText = text;
 	}
 
 	clear() {

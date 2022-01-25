@@ -6,7 +6,7 @@ export class Formula extends ExcelComponent {
 	constructor($root, options) {
 		super($root, {
 			name: 'Formula',
-			listeners: ['input'],
+			listeners: ['input', 'keydown'],
 			...options
 		});
 
@@ -19,11 +19,30 @@ export class Formula extends ExcelComponent {
 		`;
 	}
 
+	init() {
+		super.init();
+		this.$listen('cellKeypress', event => this.fillInput(event));
+	}
+
 	onInput(event) {
-		this.emitter.dispatch('formulaInput', event.target.innerText)
+		console.log(event, 'input');
+
+		this.$dispatch('formulaInput', event.target.innerText);
 	}
 
 	onDestroy(event) {
 		console.log('destroyed', this);
+	}
+
+	fillInput(text) {
+		console.log(text);
+	}
+
+	onKeydown(event) {
+		console.log(document.activeElement);
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			this.$dispatch('focusSelectedCell');
+		}
 	}
 }

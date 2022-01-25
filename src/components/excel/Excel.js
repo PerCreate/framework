@@ -5,7 +5,7 @@ export class Excel {
 	constructor(selector, options) {
 		this.$el = document.querySelector(selector);
 		this.components = options.components || [];
-		this.emitter = new Emitter()
+		this.emitter = new Emitter();
 	}
 
 	getRoot() {
@@ -13,7 +13,7 @@ export class Excel {
 
 		const componentOptions = {
 			emitter: this.emitter
-		}
+		};
 
 		this.components = this.components.map(Component => {
 			const $el = $.create('div', Component.className);
@@ -29,5 +29,9 @@ export class Excel {
 	render() {
 		this.$el.append(this.getRoot());
 		this.components.forEach(Component => Component.init());
+	}
+
+	destroy() {
+		this.components.forEach(component => component.destroy());
 	}
 }

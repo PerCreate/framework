@@ -32,7 +32,6 @@ export class Table extends ExcelComponent {
 
 	init() {
 		super.init();
-
 		const $cell = this.$root.find('[data-id="0:0"]');
 		this.selection.select($cell);
 		const rows = this.$root.findAll('.row');
@@ -40,7 +39,8 @@ export class Table extends ExcelComponent {
 		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
 		// so rows - 2
 		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
-		this.emitter.listen('formulaInput', text => this.selection.currentSelectedCell.text(text))
+		this.$listen('formulaInput', text => this.selection.currentSelectedCell.text(text));
+		this.$listen('focusSelectedCell', () => this.selection.currentSelectedCell.$el.focus());
 	}
 
 	onMousedown(event) {
@@ -81,7 +81,7 @@ export class Table extends ExcelComponent {
 	onKeydown(event) {
 		const key = event.key;
 		const isSpecialKey = Table.listKeys.includes(key);
-
-		this.selection.keypress(key, isSpecialKey, event);
+		const cb = (...args) => this.$dispatch('cellKeypress', args);
+		this.selection.keypress(key, isSpecialKey, event, cb);
 	}
 }

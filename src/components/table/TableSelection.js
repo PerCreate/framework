@@ -38,7 +38,9 @@ export class TableSelection {
 	}
 
 	clear() {
-		this.group.forEach($cell => $cell.removeAllClassBesides('cell'));
+		this.group.forEach($cell => {
+			$cell.removeAllClassBesides('cell');
+		});
 		// Delete all cursor selecting from page
 		if (window.getSelection) {
 			window.getSelection().removeAllRanges();
@@ -156,7 +158,8 @@ export class TableSelection {
 		}
 	}
 
-	keypress(key, isSpecialKey, event) {
+	keypress(key, isSpecialKey, event, cb) {
+		console.log(document.activeElement);
 		const idCurrentCell = this.currentSelectedCell.id;
 		const rowIndex = +idCurrentCell[0];
 		const colIndex = +idCurrentCell[1];
@@ -185,6 +188,7 @@ export class TableSelection {
 		if (!isSpecialKey) {
 			nextCell = findCell(rowIndex, colIndex);
 			nextCell.click(event);
+			const textContainer = nextCell.find('.text').$el;
 			return;
 		}
 
