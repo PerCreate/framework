@@ -43,6 +43,16 @@ class Dom {
 		!isCurrentElemActive && this.$el.focus();
 	}
 
+	setCursorAtEndElem($el) {
+		const selection = window.getSelection();
+		const range = document.createRange();
+		selection.removeAllRanges();
+		range.selectNodeContents($el);
+		range.collapse(false);
+		selection.addRange(range);
+		$el.focus();
+	}
+
 	find(selector) {
 		return $(this.$el.querySelector(selector));
 	}

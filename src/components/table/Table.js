@@ -46,13 +46,7 @@ export class Table extends ExcelComponent {
 	selectCell() {
 		// set cursor at the end of textContainer
 		const textContainer = this.selection.currentSelectedCell.find('.text').$el;
-		const selection = window.getSelection();
-		const range = document.createRange();
-		selection.removeAllRanges();
-		range.selectNodeContents(textContainer);
-		range.collapse(false);
-		selection.addRange(range);
-		textContainer.focus();
+		this.selection.currentSelectedCell.setCursorAtEndElem(textContainer);
 	}
 
 	onMousedown(event) {
@@ -87,6 +81,8 @@ export class Table extends ExcelComponent {
 	onDblclick(event) {
 		const closestCell = $(event.target.closest('.cell') || event.target);
 		closestCell.click();
+		const textContainer = closestCell.find('.text').$el;
+		closestCell.setCursorAtEndElem(textContainer);
 	}
 
 	onKeydown(event) {
