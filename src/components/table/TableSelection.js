@@ -20,6 +20,7 @@ export class TableSelection {
 
 	// $el instanceof DOM === true
 	select($el) {
+		this.table.$dispatch('selectingCell', $el.$el.innerText);
 		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
 			return;
 		}
@@ -41,10 +42,6 @@ export class TableSelection {
 		this.group.forEach($cell => {
 			$cell.removeAllClassBesides('cell');
 		});
-		// Delete all cursor selecting from page
-		// if (window.getSelection) {
-		// 	window.getSelection().removeAllRanges();
-		// }
 		this.table.$root.$el.querySelector('.table').focus();
 		this.group = [];
 	}
@@ -149,6 +146,7 @@ export class TableSelection {
 				this.$tableRoot.off('mousemove', startMoving);
 				this.$tableRoot.off('mouseup', endMoving);
 				this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
+				this.table.$root.$el.querySelector('.table').focus();
 			};
 
 			this.$tableRoot.on('mousemove', startMoving);
@@ -184,12 +182,20 @@ export class TableSelection {
 			return rowActiveElement === rowIndex && colActiveElement === colIndex;
 		};
 
-		var nextCell;
 
-		if (!isSpecialKey) {
-			nextCell = findCell(rowIndex, colIndex);
+		var nextCell, text;
+		nextCell = findCell(rowIndex, colIndex);
+		const textContainer = nextCell.find('.text').$el;
+
+		if (isSelectedElementFocused() && key !== 'Enter') {
+			// use timeout to execute dispatch after input event 
+			setTimeout(() => this.table.$dispatch('selectingCell', textContainer.innerText), 0);
+			return;
+		}
+
+		if (!isSpecialKey && key.length === 1) {
 			nextCell.click(event);
-			const textContainer = nextCell.find('.text').$el;
+			this.table.$dispatch('selectingCell', textContainer.innerText);
 			return;
 		}
 
@@ -234,6 +240,15 @@ export class TableSelection {
 				}
 				this.select(nextCell);
 				break;
+			case 'Delete':
+			case 'Backspace':
+				if (!isSelectedElementFocused()) {
+					textContainer.innerText = '';
+					nextCell.click();
+				}
+				break;
+			default:
+				throw new Error(`condition for ${key} not found!`);
 		}
 	}
 }

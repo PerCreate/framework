@@ -23,8 +23,12 @@ class Dom {
 	}
 
 	text(text) {
-		const textContainer = this.$el.querySelector('.text');
-		textContainer.innerText = text;
+		if (this.find('.cell').$el) {
+			const textContainer = this.$el.querySelector('.text');
+			textContainer.innerText = text;
+		} else {
+			this.$el.innerText = text;
+		}
 	}
 
 	clear() {
@@ -34,7 +38,7 @@ class Dom {
 
 	click(event) {
 		const isCurrentElemActive = document.activeElement.isEqualNode(this.$el);
-		!isCurrentElemActive && window.setTimeout(() => this.$el.focus(), 0);
+		!isCurrentElemActive && this.$el.focus();
 	}
 
 	find(selector) {

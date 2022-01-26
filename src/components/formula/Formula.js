@@ -21,7 +21,9 @@ export class Formula extends ExcelComponent {
 
 	init() {
 		super.init();
+		this.input = this.$root.find('.input');
 		this.$listen('cellKeypress', event => this.fillInput(event));
+		this.$listen('selectingCell', event => this.fillInput(event));
 	}
 
 	onInput(event) {
@@ -33,7 +35,7 @@ export class Formula extends ExcelComponent {
 	}
 
 	fillInput(text) {
-		console.log(text);
+		this.input.text(text);
 	}
 
 	onKeydown(event) {
