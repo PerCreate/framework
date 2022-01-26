@@ -194,61 +194,64 @@ export class TableSelection {
 		}
 
 		if (!isSpecialKey && key.length === 1) {
-			nextCell.click(event);
-			this.table.$dispatch('selectingCell', textContainer.innerText);
+			nextCell.click();
+			// use timeout to execute dispatch after input event
+			setTimeout(() => this.table.$dispatch('selectingCell', textContainer.innerText), 0);
 			return;
 		}
-
-		event.preventDefault();
-		switch (key) {
-			case 'Enter':
-				if (isSelectedElementFocused()) {
+		if (isSpecialKey) {
+			event.preventDefault();
+			switch (key) {
+				case 'Enter':
+					if (isSelectedElementFocused()) {
+						if (lastRow) return;
+						nextCell = findCell(rowIndex + 1, colIndex);
+						this.select(nextCell);
+					} else {
+						findCell(rowIndex, colIndex).click();
+					}
+					break;
+				case 'Tab':
+				case 'ArrowRight':
+					if (lastCell) {
+						if (lastRow) return;
+						nextCell = findCell(rowIndex + 1, 0);
+					} else {
+						nextCell = findCell(rowIndex, colIndex + 1);
+					}
+					this.select(nextCell);
+					break;
+				case 'ArrowDown':
 					if (lastRow) return;
 					nextCell = findCell(rowIndex + 1, colIndex);
 					this.select(nextCell);
-				} else {
-					findCell(rowIndex, colIndex).click();
-				}
-				break;
-			case 'Tab':
-			case 'ArrowRight':
-				if (lastCell) {
-					if (lastRow) return;
-					nextCell = findCell(rowIndex + 1, 0);
-				} else {
-					nextCell = findCell(rowIndex, colIndex + 1);
-				}
-				this.select(nextCell);
-				break;
-			case 'ArrowDown':
-				if (lastRow) return;
-				nextCell = findCell(rowIndex + 1, colIndex);
-				this.select(nextCell);
-				break;
-			case 'ArrowUp':
-				if (firstRow) return;
-				nextCell = findCell(rowIndex - 1, colIndex);
-				this.select(nextCell);
-				break;
-			case 'ArrowLeft':
-				if (firstCol) {
-					if (!firstRow) {
-						nextCell = findCell(rowIndex - 1, colsInTable);
+					break;
+				case 'ArrowUp':
+					if (firstRow) return;
+					nextCell = findCell(rowIndex - 1, colIndex);
+					this.select(nextCell);
+					break;
+				case 'ArrowLeft':
+					if (firstCol) {
+						if (!firstRow) {
+							nextCell = findCell(rowIndex - 1, colsInTable);
+						}
+					} else {
+						nextCell = findCell(rowIndex, colIndex - 1);
 					}
-				} else {
-					nextCell = findCell(rowIndex, colIndex - 1);
-				}
-				this.select(nextCell);
-				break;
-			case 'Delete':
-			case 'Backspace':
-				if (!isSelectedElementFocused()) {
-					textContainer.innerText = '';
-					nextCell.click();
-				}
-				break;
-			default:
-				throw new Error(`condition for ${key} not found!`);
+					this.select(nextCell);
+					break;
+				case 'Delete':
+				case 'Backspace':
+					if (!isSelectedElementFocused()) {
+						textContainer.innerText = '';
+						nextCell.click();
+					}
+					break;
+				default:
+					throw new Error(`condition for ${key} not found!`);
+			}
 		}
 	}
+
 }

@@ -39,8 +39,20 @@ export class Table extends ExcelComponent {
 		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
 		// so rows - 2
 		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
-		this.$listen('formulaInput', text => this.selection.currentSelectedCell.text(text));
-		this.$listen('focusSelectedCell', () => this.selection.currentSelectedCell.$el.focus());
+		this.$listen('formulaInput', text => this.selection.currentSelectedCell.textCell(text));
+		this.$listen('focusSelectedCell', () => this.selectCell());
+	}
+
+	selectCell() {
+		// set cursor at the end of textContainer
+		const textContainer = this.selection.currentSelectedCell.find('.text').$el;
+		const selection = window.getSelection();
+		const range = document.createRange();
+		selection.removeAllRanges();
+		range.selectNodeContents(textContainer);
+		range.collapse(false);
+		selection.addRange(range);
+		textContainer.focus();
 	}
 
 	onMousedown(event) {

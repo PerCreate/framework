@@ -22,13 +22,15 @@ class Dom {
 		return this.$el.outerHTML.trim();
 	}
 
+	textCell(text) {
+		const textContainer = this.$el.querySelector('.text');
+		textContainer.innerText = text;
+	}
+
 	text(text) {
-		if (this.find('.cell').$el) {
-			const textContainer = this.$el.querySelector('.text');
-			textContainer.innerText = text;
-		} else {
-			this.$el.innerText = text;
-		}
+
+		this.$el.innerText = text;
+
 	}
 
 	clear() {
