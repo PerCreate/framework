@@ -3,7 +3,8 @@ import tableResize from "./table.resize";
 import { createTable } from "./table.template";
 import { TableSelection } from '@/components/table/TableSelection';
 import { $ } from "../../core/dom";
-
+//working Исправить баг с выделением даблкликом ячейки после выделения мышью
+//working Исправить баг с переключением activeElement при клике на fx формулу(после клика хоткеи для таблицы не работают)
 export class Table extends ExcelComponent {
 	static className = 'excel__table';
 	static listKeys = ['Enter', 'Tab', 'ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'];
