@@ -42,9 +42,10 @@ export class TableSelection {
 			$cell.removeAllClassBesides('cell');
 		});
 		// Delete all cursor selecting from page
-		if (window.getSelection) {
-			window.getSelection().removeAllRanges();
-		}
+		// if (window.getSelection) {
+		// 	window.getSelection().removeAllRanges();
+		// }
+		this.table.$root.$el.querySelector('.table').focus();
 		this.group = [];
 	}
 	/**
@@ -159,7 +160,6 @@ export class TableSelection {
 	}
 
 	keypress(key, isSpecialKey, event, cb) {
-		console.log(document.activeElement);
 		const idCurrentCell = this.currentSelectedCell.id;
 		const rowIndex = +idCurrentCell[0];
 		const colIndex = +idCurrentCell[1];
@@ -177,7 +177,8 @@ export class TableSelection {
 		};
 
 		const isSelectedElementFocused = () => {
-			const idActiveElement = document.activeElement?.dataset?.id.split(':');
+			const idActiveElement = document.activeElement?.dataset?.id?.split(':');
+			if (!idActiveElement) return false;
 			const rowActiveElement = +idActiveElement[0];
 			const colActiveElement = +idActiveElement[1];
 			return rowActiveElement === rowIndex && colActiveElement === colIndex;

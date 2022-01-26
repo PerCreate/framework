@@ -20,7 +20,7 @@ export class Table extends ExcelComponent {
 	toHTML() {
 		const tableContent = createTable(150);
 		const table = `
-			<div class="table">
+			<div class="table" tabindex="1">
 				${tableContent}
 			</div>
 		`;

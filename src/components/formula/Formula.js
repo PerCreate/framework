@@ -25,8 +25,6 @@ export class Formula extends ExcelComponent {
 	}
 
 	onInput(event) {
-		console.log(event, 'input');
-
 		this.$dispatch('formulaInput', event.target.innerText);
 	}
 
@@ -39,7 +37,6 @@ export class Formula extends ExcelComponent {
 	}
 
 	onKeydown(event) {
-		console.log(document.activeElement);
 		if (event.key === 'Enter') {
 			event.preventDefault();
 			this.$dispatch('focusSelectedCell');
