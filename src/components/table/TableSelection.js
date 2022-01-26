@@ -208,7 +208,10 @@ export class TableSelection {
 						nextCell = findCell(rowIndex + 1, colIndex);
 						this.select(nextCell);
 					} else {
-						findCell(rowIndex, colIndex).click();
+						nextCell = findCell(rowIndex, colIndex);
+						const textContainer = nextCell.find('.text').$el;
+						nextCell.click();
+						nextCell.setCursorAtEndElem(textContainer);
 					}
 					break;
 				case 'Tab':

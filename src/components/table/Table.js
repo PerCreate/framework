@@ -80,8 +80,8 @@ export class Table extends ExcelComponent {
 
 	onDblclick(event) {
 		const closestCell = $(event.target.closest('.cell') || event.target);
-		closestCell.click();
 		const textContainer = closestCell.find('.text').$el;
+		closestCell.click();
 		closestCell.setCursorAtEndElem(textContainer);
 	}
 
