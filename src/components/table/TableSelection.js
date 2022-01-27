@@ -194,6 +194,7 @@ export class TableSelection {
 		}
 
 		if (!isSpecialKey && key.length === 1) {
+			textContainer.innerText = '';
 			nextCell.click();
 			// use timeout to execute dispatch after input event
 			setTimeout(() => this.table.$dispatch('selectingCell', textContainer.innerText), 0);
