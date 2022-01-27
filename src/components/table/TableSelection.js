@@ -166,7 +166,7 @@ export class TableSelection {
 		}
 	}
 
-	keypress(key, isSpecialKey, event, cb) {
+	keypress(key, isSpecialKey, event) {
 		const idCurrentCell = this.currentSelectedCell.id;
 		const rowIndexCurrentCell = +idCurrentCell[0];
 		const colIndexCurrentCell = +idCurrentCell[1];
@@ -178,10 +178,6 @@ export class TableSelection {
 		const isFirstRow = rowIndexCurrentCell === 0;
 		const isFirstCol = colIndexCurrentCell === 0;
 
-		const findCell = (rowIndexCurrentCell, colIndexCurrentCell) => {
-			return this.$tableRoot.find(`[data-id="${rowIndexCurrentCell}:${colIndexCurrentCell}"]`);
-		};
-
 		const isSelectedCellFocused = () => {
 			const idActiveElement = document.activeElement?.dataset?.id?.split(':');
 			if (!idActiveElement) return false;
@@ -192,7 +188,7 @@ export class TableSelection {
 
 
 		var nextCell, text;
-		nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell);
+		nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell);
 		const textContainer = nextCell.find('.text').$el;
 
 		if (isSelectedCellFocused() && key !== 'Enter') {
@@ -214,10 +210,10 @@ export class TableSelection {
 				case 'Enter':
 					if (isSelectedCellFocused()) {
 						if (isLastRow) return;
-						nextCell = findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
 						this.select(nextCell);
 					} else {
-						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell);
 						const textContainer = nextCell.find('.text').$el;
 						nextCell.click();
 						nextCell.setCursorAtEndElem(textContainer);
@@ -227,29 +223,29 @@ export class TableSelection {
 				case 'ArrowRight':
 					if (isLastCell) {
 						if (isLastRow) return;
-						nextCell = findCell(rowIndexCurrentCell + 1, 0);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, 0);
 					} else {
-						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell + 1);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell + 1);
 					}
 					this.select(nextCell);
 					break;
 				case 'ArrowDown':
 					if (isLastRow) return;
-					nextCell = findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
+					nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
 					this.select(nextCell);
 					break;
 				case 'ArrowUp':
 					if (isFirstRow) return;
-					nextCell = findCell(rowIndexCurrentCell - 1, colIndexCurrentCell);
+					nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, colIndexCurrentCell);
 					this.select(nextCell);
 					break;
 				case 'ArrowLeft':
 					if (isFirstCol) {
 						if (!isFirstRow) {
-							nextCell = findCell(rowIndexCurrentCell - 1, colsInTable);
+							nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, colsInTable);
 						}
 					} else {
-						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell - 1);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell - 1);
 					}
 					this.select(nextCell);
 					break;

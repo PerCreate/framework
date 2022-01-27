@@ -27,11 +27,11 @@ export class ExcelComponent extends DomListener {
 	$dispatch(event, ...args) {
 		this.emitter.dispatch(event, ...args);
 	}
-	// Redux
-	dispatch(action) {
-		this.store.dispatch(action);
-	}
 
+	// Redux
+	updateStore(action) {
+		this.store.updateStore(action);
+	}
 	subscribe(fn) {
 		this.storeUnsub = this.store.subscribe(fn);
 	}

@@ -1,3 +1,5 @@
+import { $ } from "../../core/dom";
+
 /**
 	 * 
 	 * @param {*} currentPosition position for calculating new value 
@@ -6,7 +8,7 @@
 	 * @param {*} event 
 	 * @param {*} resizeElement 'col' or 'row'
 	 */
-export default (event, resizeElement) => {
+export default (event, resizeElement, tableComponent) => {
 	return new Promise(resolve => {
 		const el = event.target;
 		const table = el.closest('.excel__table>.table');
@@ -76,15 +78,14 @@ export default (event, resizeElement) => {
 					row.style.height = isNeedNewValue(el.style.top, minValue) ? el.style.top : row.style.height;
 					break;
 				case 'col':
-					const arr = Array.from(table.children);
-					const closestRowData = col.closest('.row-data');
-					var indexColumn = Array.from(closestRowData.children).indexOf(col);
-
 					var value = isNeedNewValue(el.style.left, minValue) ? el.style.left : col.style.width;
-					col.style.width = value;
-					arr.forEach(row => {
-						const rowDataArr = Array.from(row.querySelector('.row-data').children);
-						rowDataArr[indexColumn].style.width = value;
+
+					var indexColumn = +$(col).dataset.col;
+					const cellsToResize = tableComponent.findAllCells(null, indexColumn);
+
+					$(col).css({ width: value });
+					cellsToResize.forEach(cell => {
+						cell.css({ width: value });
 					});
 					break;
 			}

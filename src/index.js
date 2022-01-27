@@ -6,9 +6,18 @@ import { Table } from '@/components/table/Table';
 import './scss/index.scss';
 import { Store } from './core/createStore';
 import { rootReducer } from './redux/rootReducer';
+import { storage } from './core/utils';
 
-const store = new Store(rootReducer, {
-	colState: {}
+const initialState = {
+	colState: {},
+};
+//working поставить width для column и cell при первоначальном рендере(размеры из лк). Дописать table.tamplate
+const storageState = JSON.parse(localStorage.getItem('excel-state')) || initialState;
+
+const store = new Store(rootReducer, storageState);
+
+store.subscribe(state => {
+	storage('excel-state', state);
 });
 
 const excel = new Excel('#app', {

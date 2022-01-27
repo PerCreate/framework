@@ -2,9 +2,15 @@ const CODES = {
 	A: 65,
 	Z: 90
 };
-function createCell(rowIndex) {
+function createCell(rowIndex, colState) {
 
-	return (cell, index) => `<div
+	return (cell, index) => {
+		index += 1;
+		rowIndex += 1;
+
+		const style = colState[index];
+
+		return `<div
 			class="cell" 
 			contenteditable
 			data-cell=${index}
@@ -17,6 +23,7 @@ function createCell(rowIndex) {
 			</div>
 		</div>
 	`;
+	};
 };
 
 
@@ -53,7 +60,7 @@ function createRow(index, content) {
 		</div>
 	`;
 }
-export function createTable(rowsCount = 150) {
+export function createTable(rowsCount = 15, colState) {
 	const colsCount = CODES.Z - CODES.A + 1;
 	const rows = [];
 
@@ -62,7 +69,7 @@ export function createTable(rowsCount = 150) {
 		.map((el, index) => {
 			return String.fromCharCode(CODES.A + index);
 		})
-		.map((el, index) => createCol(index + 1, el))
+		.map((el, index) => createCol(index + 1, el, colState))
 		.join('');
 
 	rows.push(createRow(null, cols));
@@ -70,7 +77,7 @@ export function createTable(rowsCount = 150) {
 	for (let row = 0; row < rowsCount; row += 1) {
 		const cells = new Array(colsCount)
 			.fill('')
-			.map(createCell(row))
+			.map(createCell(row, colState))
 			.join('');
 
 		rows.push(createRow(row + 1, cells));

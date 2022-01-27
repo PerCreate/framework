@@ -4,6 +4,7 @@ import { createTable } from "./table.template";
 import { TableSelection } from '@/components/table/TableSelection';
 import { $ } from "../../core/dom";
 import Events from "../../core/Events";
+import * as actions from '@/redux/actions';
 
 export class Table extends ExcelComponent {
 	static className = 'excel__table';
@@ -18,7 +19,8 @@ export class Table extends ExcelComponent {
 	}
 
 	toHTML() {
-		const tableContent = createTable(150);
+		const { colState } = this.store.state;
+		const tableContent = createTable(150, colState);
 		const table = `
 			<div class="table" tabindex="1">
 				${tableContent}
@@ -33,7 +35,7 @@ export class Table extends ExcelComponent {
 
 	init() {
 		super.init();
-		const $cell = this.$root.find('[data-id="0:0"]');
+		const $cell = this.$root.find('[data-id="1:1"]');
 		this.selection.prepare();
 		this.selection.select($cell);
 		const rows = this.$root.findAll('.row');
@@ -43,23 +45,34 @@ export class Table extends ExcelComponent {
 		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
 		this.$listen(Events.Formula.INPUT, text => this.selection.currentSelectedCell.textCell(text));
 		this.$listen(Events.Formula.PRESS_ENTER, () => this.selectCell());
-		this.subscribe(state => console.log('Table', state));
 	}
+
+	findCell(rowIndexCurrentCell, colIndexCurrentCell) {
+		return this.$root.find(`[data-id="${rowIndexCurrentCell}:${colIndexCurrentCell}"]`);
+	};
+
+	findAllCells(rowIndexCurrentCell = null, colIndexCurrentCell) {
+		if (rowIndexCurrentCell !== null) {
+			return this.$root.findAll(`[data-id="${rowIndexCurrentCell}:${colIndexCurrentCell}"]`);
+		} else {
+			return this.$root.findAll(`[data-cell="${colIndexCurrentCell}"]`);
+		}
+
+	};
 
 	selectCell() {
 		// set cursor at the end of textContainer
 		const textContainer = this.selection.currentSelectedCell.find('.text').$el;
 		this.selection.currentSelectedCell.setCursorAtEndElem(textContainer);
-		this.dispatch({ type: 'TEST' });
 	}
 
 	async resizeTable(event, resizeElement) {
 		try {
-			const data = await tableResize(event, resizeElement);
+			const data = await tableResize(event, resizeElement, this);
+			this.updateStore(actions.tableResize(data));
 		} catch (err) {
 			console.warn('Resize error', err.message);
 		}
-
 	}
 
 	onMousedown(event) {
@@ -101,7 +114,6 @@ export class Table extends ExcelComponent {
 	onKeydown(event) {
 		const key = event.key;
 		const isSpecialKey = Table.listKeys.includes(key);
-		const cb = (...args) => this.$dispatch(Events.Table.INPUT, args);
-		this.selection.keypress(key, isSpecialKey, event, cb);
+		this.selection.keypress(key, isSpecialKey, event);
 	}
 }

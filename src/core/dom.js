@@ -64,6 +64,13 @@ export class Dom {
 		return (this.$el.closest(selector)) || this.$el;
 	}
 
+	css(styles) {
+		if (typeof styles !== 'object') throw new Error(`For Dom.css method use only object format! Format ${styles} is ${typeof styles}`);
+		for (const style in styles) {
+			this.$el.style[style] = styles[style];
+		}
+	}
+
 	addClass(className) {
 		this.$el.classList.add(className);
 	}

@@ -13,7 +13,7 @@ export class Store {
 			}
 		};
 	}
-	dispatch(action) {
+	updateStore(action) {
 		this.state = this.rootReducer(this.state, action);
 		this.listeners.forEach(listener => listener(this.state));
 	}
