@@ -1,4 +1,4 @@
-import { $ } from "../../core/dom";
+import { $, Dom } from "../../core/dom";
 import Events from "../../core/Events";
 export class TableSelection {
 	static selected = 'selected';
@@ -28,6 +28,7 @@ export class TableSelection {
 
 	// $el instanceof DOM === true
 	select($el) {
+		if (!$el instanceof Dom) throw new Error(`${$el} is not an instance of Dom`);
 		this.tableComponent.$dispatch(Events.Table.SELECTING_CELL, $el.$el.innerText);
 		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
 			return;
@@ -42,7 +43,7 @@ export class TableSelection {
 		// first click on cell will find all cells in the table
 		if (!this.$allCells) {
 			this.$allCells = this.$tableRoot.findAll('.cell');
-			$closestCell.click();
+			this.table.focus();
 		}
 	}
 

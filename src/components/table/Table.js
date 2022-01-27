@@ -53,6 +53,7 @@ export class Table extends ExcelComponent {
 
 	onMousedown(event) {
 		var el = event.target;
+		console.log(el);
 		const shiftKey = event.shiftKey;
 
 		if (el.dataset.resize) {
