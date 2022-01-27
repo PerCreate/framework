@@ -1,3 +1,4 @@
+import Events from "../../core/Events";
 import { ExcelComponent } from "../../core/ExcelComponent";
 
 export class Formula extends ExcelComponent {
@@ -22,12 +23,12 @@ export class Formula extends ExcelComponent {
 	init() {
 		super.init();
 		this.input = this.$root.find('.input');
-		this.$listen('cellKeypress', event => this.fillInput(event));
-		this.$listen('selectingCell', event => this.fillInput(event));
+		this.$listen(Events.Table.INPUT, event => this.fillInput(event));
+		this.$listen(Events.Table.SELECTING_CELL, event => this.fillInput(event));
 	}
 
 	onInput(event) {
-		this.$dispatch('formulaInput', event.target.innerText);
+		this.$dispatch(Events.Formula.INPUT, event.target.innerText);
 	}
 
 	onDestroy(event) {
@@ -41,7 +42,7 @@ export class Formula extends ExcelComponent {
 	onKeydown(event) {
 		if (event.key === 'Enter') {
 			event.preventDefault();
-			this.$dispatch('focusSelectedCell');
+			this.$dispatch(Events.Formula.PRESS_ENTER);
 		}
 	}
 }

@@ -28,9 +28,7 @@ class Dom {
 	}
 
 	text(text) {
-
 		this.$el.innerText = text;
-
 	}
 
 	clear() {
@@ -63,7 +61,7 @@ class Dom {
 	}
 
 	closest(selector) {
-		return this.$el.closest(selector) || this.$el;
+		return (this.$el.closest(selector)) || this.$el;
 	}
 
 	addClass(className) {

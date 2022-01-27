@@ -1,4 +1,5 @@
 import { $ } from "../../core/dom";
+import Events from "../../core/Events";
 export class TableSelection {
 	static selected = 'selected';
 	static groupSelected = {
@@ -10,17 +11,24 @@ export class TableSelection {
 		last: 'lastCell'
 	};
 
-	constructor($tableRoot, table) {
+	constructor($tableRoot, tableComponent) {
 		this.group = [];
 		this.$allCells = null;
-		this.$tableRoot = $tableRoot;
 		this.currentSelectedCell = null;
-		this.table = table;
+		//excel__table instanceof DOM
+		this.$tableRoot = $tableRoot;
+		//Table component
+		this.tableComponent = tableComponent;
+	}
+
+	prepare() {
+		//div.table === HTMLElement
+		this.table = this.tableComponent.$root.$el.querySelector('.table');
 	}
 
 	// $el instanceof DOM === true
 	select($el) {
-		this.table.$dispatch('selectingCell', $el.$el.innerText);
+		this.tableComponent.$dispatch(Events.Table.SELECTING_CELL, $el.$el.innerText);
 		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
 			return;
 		}
@@ -42,7 +50,7 @@ export class TableSelection {
 		this.group.forEach($cell => {
 			$cell.removeAllClassBesides('cell');
 		});
-		this.table.$root.$el.querySelector('.table').focus();
+		this.table.focus();
 		this.group = [];
 	}
 	/**
@@ -146,7 +154,7 @@ export class TableSelection {
 				this.$tableRoot.off('mousemove', startMoving);
 				this.$tableRoot.off('mouseup', endMoving);
 				this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
-				this.table.$root.$el.querySelector('.table').focus();
+				this.table.focus();
 			};
 
 			this.$tableRoot.on('mousemove', startMoving);
@@ -159,37 +167,36 @@ export class TableSelection {
 
 	keypress(key, isSpecialKey, event, cb) {
 		const idCurrentCell = this.currentSelectedCell.id;
-		const rowIndex = +idCurrentCell[0];
-		const colIndex = +idCurrentCell[1];
+		const rowIndexCurrentCell = +idCurrentCell[0];
+		const colIndexCurrentCell = +idCurrentCell[1];
 
-		const rowsInTable = this.table.tableSize.rows;
-		const colsInTable = this.table.tableSize.cols;
+		const { rows, cols } = this.tableComponent.tableSize;
 
-		const lastCell = colIndex === colsInTable;
-		const lastRow = rowIndex === rowsInTable;
-		const firstRow = rowIndex === 0;
-		const firstCol = colIndex === 0;
+		const isLastCell = colIndexCurrentCell === cols;
+		const isLastRow = rowIndexCurrentCell === rows;
+		const isFirstRow = rowIndexCurrentCell === 0;
+		const isFirstCol = colIndexCurrentCell === 0;
 
-		const findCell = (rowIndex, colIndex) => {
-			return this.$tableRoot.find(`[data-id="${rowIndex}:${colIndex}"]`);
+		const findCell = (rowIndexCurrentCell, colIndexCurrentCell) => {
+			return this.$tableRoot.find(`[data-id="${rowIndexCurrentCell}:${colIndexCurrentCell}"]`);
 		};
 
-		const isSelectedElementFocused = () => {
+		const isSelectedCellFocused = () => {
 			const idActiveElement = document.activeElement?.dataset?.id?.split(':');
 			if (!idActiveElement) return false;
 			const rowActiveElement = +idActiveElement[0];
 			const colActiveElement = +idActiveElement[1];
-			return rowActiveElement === rowIndex && colActiveElement === colIndex;
+			return rowActiveElement === rowIndexCurrentCell && colActiveElement === colIndexCurrentCell;
 		};
 
 
 		var nextCell, text;
-		nextCell = findCell(rowIndex, colIndex);
+		nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell);
 		const textContainer = nextCell.find('.text').$el;
 
-		if (isSelectedElementFocused() && key !== 'Enter') {
+		if (isSelectedCellFocused() && key !== 'Enter') {
 			// use timeout to execute dispatch after input event 
-			setTimeout(() => this.table.$dispatch('selectingCell', textContainer.innerText), 0);
+			setTimeout(() => this.tableComponent.$dispatch(Events.Table.SELECTING_CELL, textContainer.innerText), 0);
 			return;
 		}
 
@@ -197,19 +204,19 @@ export class TableSelection {
 			textContainer.innerText = '';
 			nextCell.click();
 			// use timeout to execute dispatch after input event
-			setTimeout(() => this.table.$dispatch('selectingCell', textContainer.innerText), 0);
+			setTimeout(() => this.tableComponent.$dispatch(Events.Table.SELECTING_CELL, textContainer.innerText), 0);
 			return;
 		}
 		if (isSpecialKey) {
 			event.preventDefault();
 			switch (key) {
 				case 'Enter':
-					if (isSelectedElementFocused()) {
-						if (lastRow) return;
-						nextCell = findCell(rowIndex + 1, colIndex);
+					if (isSelectedCellFocused()) {
+						if (isLastRow) return;
+						nextCell = findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
 						this.select(nextCell);
 					} else {
-						nextCell = findCell(rowIndex, colIndex);
+						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell);
 						const textContainer = nextCell.find('.text').$el;
 						nextCell.click();
 						nextCell.setCursorAtEndElem(textContainer);
@@ -217,37 +224,37 @@ export class TableSelection {
 					break;
 				case 'Tab':
 				case 'ArrowRight':
-					if (lastCell) {
-						if (lastRow) return;
-						nextCell = findCell(rowIndex + 1, 0);
+					if (isLastCell) {
+						if (isLastRow) return;
+						nextCell = findCell(rowIndexCurrentCell + 1, 0);
 					} else {
-						nextCell = findCell(rowIndex, colIndex + 1);
+						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell + 1);
 					}
 					this.select(nextCell);
 					break;
 				case 'ArrowDown':
-					if (lastRow) return;
-					nextCell = findCell(rowIndex + 1, colIndex);
+					if (isLastRow) return;
+					nextCell = findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
 					this.select(nextCell);
 					break;
 				case 'ArrowUp':
-					if (firstRow) return;
-					nextCell = findCell(rowIndex - 1, colIndex);
+					if (isFirstRow) return;
+					nextCell = findCell(rowIndexCurrentCell - 1, colIndexCurrentCell);
 					this.select(nextCell);
 					break;
 				case 'ArrowLeft':
-					if (firstCol) {
-						if (!firstRow) {
-							nextCell = findCell(rowIndex - 1, colsInTable);
+					if (isFirstCol) {
+						if (!isFirstRow) {
+							nextCell = findCell(rowIndexCurrentCell - 1, colsInTable);
 						}
 					} else {
-						nextCell = findCell(rowIndex, colIndex - 1);
+						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell - 1);
 					}
 					this.select(nextCell);
 					break;
 				case 'Delete':
 				case 'Backspace':
-					if (!isSelectedElementFocused()) {
+					if (!isSelectedCellFocused()) {
 						textContainer.innerText = '';
 						nextCell.click();
 					}

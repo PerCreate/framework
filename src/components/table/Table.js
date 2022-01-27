@@ -3,6 +3,7 @@ import tableResize from "./table.resize";
 import { createTable } from "./table.template";
 import { TableSelection } from '@/components/table/TableSelection';
 import { $ } from "../../core/dom";
+import Events from "../../core/Events";
 
 export class Table extends ExcelComponent {
 	static className = 'excel__table';
@@ -33,14 +34,15 @@ export class Table extends ExcelComponent {
 	init() {
 		super.init();
 		const $cell = this.$root.find('[data-id="0:0"]');
+		this.selection.prepare();
 		this.selection.select($cell);
 		const rows = this.$root.findAll('.row');
 		const cols = rows[1].findAll('.cell');
 		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
 		// so rows - 2
 		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
-		this.$listen('formulaInput', text => this.selection.currentSelectedCell.textCell(text));
-		this.$listen('focusSelectedCell', () => this.selectCell());
+		this.$listen(Events.Formula.INPUT, text => this.selection.currentSelectedCell.textCell(text));
+		this.$listen(Events.Formula.PRESS_ENTER, () => this.selectCell());
 	}
 
 	selectCell() {
@@ -88,7 +90,7 @@ export class Table extends ExcelComponent {
 	onKeydown(event) {
 		const key = event.key;
 		const isSpecialKey = Table.listKeys.includes(key);
-		const cb = (...args) => this.$dispatch('cellKeypress', args);
+		const cb = (...args) => this.$dispatch(Events.Table.INPUT, args);
 		this.selection.keypress(key, isSpecialKey, event, cb);
 	}
 }
