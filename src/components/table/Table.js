@@ -43,26 +43,36 @@ export class Table extends ExcelComponent {
 		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
 		this.$listen(Events.Formula.INPUT, text => this.selection.currentSelectedCell.textCell(text));
 		this.$listen(Events.Formula.PRESS_ENTER, () => this.selectCell());
+		this.subscribe(state => console.log('Table', state));
 	}
 
 	selectCell() {
 		// set cursor at the end of textContainer
 		const textContainer = this.selection.currentSelectedCell.find('.text').$el;
 		this.selection.currentSelectedCell.setCursorAtEndElem(textContainer);
+		this.dispatch({ type: 'TEST' });
+	}
+
+	async resizeTable(event, resizeElement) {
+		try {
+			const data = await tableResize(event, resizeElement);
+		} catch (err) {
+			console.warn('Resize error', err.message);
+		}
+
 	}
 
 	onMousedown(event) {
 		var el = event.target;
-		console.log(el);
 		const shiftKey = event.shiftKey;
 
 		if (el.dataset.resize) {
 			switch (el.dataset.resize) {
 				case 'col':
-					tableResize(event, 'col');
+					this.resizeTable(event, 'col');
 					break;
 				case 'row':
-					tableResize(event, 'row');
+					this.resizeTable(event, 'row');
 					break;
 			}
 		} else if (el.dataset.cell) {
