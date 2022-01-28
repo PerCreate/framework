@@ -3,10 +3,10 @@ const CODES = {
 	Z: 90
 };
 function createCell(rowIndex, colState = {}) {
+	rowIndex += 1;
 
 	return (cell, index) => {
 		index += 1;
-		rowIndex += 1;
 
 		var cellStyles = '';
 		if (colState[index]) {
@@ -61,7 +61,6 @@ function createRow(index, content, rowState = {}) {
 	var rowStyles = '';
 	if (rowState[index]) {
 		for (const style in rowState[index]) {
-			console.log(style);
 			rowStyles += `${style}:${rowState[index][style]}`;
 		}
 	}
