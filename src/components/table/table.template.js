@@ -2,19 +2,25 @@ const CODES = {
 	A: 65,
 	Z: 90
 };
-function createCell(rowIndex, colState) {
+function createCell(rowIndex, colState = {}) {
 
 	return (cell, index) => {
 		index += 1;
 		rowIndex += 1;
 
-		const style = colState[index];
+		var cellStyles = '';
+		if (colState[index]) {
+			for (const style in colState[index]) {
+				cellStyles += `${style}:${colState[index][style]}`;
+			}
+		}
 
 		return `<div
 			class="cell" 
 			contenteditable
 			data-cell=${index}
 			data-id=${rowIndex}:${index}
+			style="${cellStyles}"
 			>
 			${cell}
 			<div class="text" data-cell="text"></div>
@@ -27,11 +33,19 @@ function createCell(rowIndex, colState) {
 };
 
 
-function createCol(index, col) {
+function createCol(index, col, colState = {}) {
+	var colStyles = '';
+	if (colState[index]) {
+		for (const style in colState[index]) {
+			colStyles += `${style}:${colState[index][style]}`;
+		}
+	}
+
 	return `
 			<div
 				class="column"
 				data-col=${index}
+				style="${colStyles}"
 				unselectable="on"
 				onselectstart="return false;"
 				onmousedown="return false;"
@@ -42,11 +56,18 @@ function createCol(index, col) {
 	`;
 }
 
-function createRow(index, content) {
+function createRow(index, content, rowState = {}) {
 	const resize = index ? `<div class="row-resize" data-resize="row"></div>` : '';
+	var rowStyles = '';
+	if (rowState[index]) {
+		for (const style in rowState[index]) {
+			console.log(style);
+			rowStyles += `${style}:${rowState[index][style]}`;
+		}
+	}
 
 	return `
-		<div class="row">
+		<div class="row" data-row=${index || 0} style="${rowStyles}">
 			<div
 				class="row-info"
 				unselectable="on"
@@ -60,7 +81,7 @@ function createRow(index, content) {
 		</div>
 	`;
 }
-export function createTable(rowsCount = 15, colState) {
+export function createTable(rowsCount = 15, colState, rowState) {
 	const colsCount = CODES.Z - CODES.A + 1;
 	const rows = [];
 
@@ -80,7 +101,7 @@ export function createTable(rowsCount = 15, colState) {
 			.map(createCell(row, colState))
 			.join('');
 
-		rows.push(createRow(row + 1, cells));
+		rows.push(createRow(row + 1, cells, rowState));
 	}
 
 	return rows.join('');

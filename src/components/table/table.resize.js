@@ -73,14 +73,17 @@ export default (event, resizeElement, tableComponent) => {
 			document.removeEventListener('mousemove', startMoving);
 			document.removeEventListener('mouseup', endMoving);
 
+			var value, indexColumn, indexRow;
 			switch (resizeElement) {
 				case 'row':
-					row.style.height = isNeedNewValue(el.style.top, minValue) ? el.style.top : row.style.height;
+					value = isNeedNewValue(el.style.top, minValue) ? el.style.top : row.style.height;
+					$(row).css({ height: value });
+					indexRow = +$(row).dataset.row;
 					break;
 				case 'col':
-					var value = isNeedNewValue(el.style.left, minValue) ? el.style.left : col.style.width;
+					value = isNeedNewValue(el.style.left, minValue) ? el.style.left : col.style.width;
 
-					var indexColumn = +$(col).dataset.col;
+					indexColumn = +$(col).dataset.col;
 					const cellsToResize = tableComponent.findAllCells(null, indexColumn);
 
 					$(col).css({ width: value });
@@ -91,10 +94,10 @@ export default (event, resizeElement, tableComponent) => {
 			}
 
 			el.style = null;
-
 			resolve({
+				resizeElement,
 				value,
-				id: resizeElement === 'col' ? indexColumn : null
+				id: resizeElement === 'col' ? indexColumn : indexRow
 			});
 
 		};

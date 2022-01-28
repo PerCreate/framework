@@ -19,8 +19,8 @@ export class Table extends ExcelComponent {
 	}
 
 	toHTML() {
-		const { colState } = this.store.state;
-		const tableContent = createTable(150, colState);
+		const { colState, rowState } = this.store.state;
+		const tableContent = createTable(150, colState, rowState);
 		const table = `
 			<div class="table" tabindex="1">
 				${tableContent}

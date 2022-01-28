@@ -11,7 +11,7 @@ import { storage } from './core/utils';
 const initialState = {
 	colState: {},
 };
-//working поставить width для column и cell при первоначальном рендере(размеры из лк). Дописать table.tamplate
+// working баг с выделением
 const storageState = JSON.parse(localStorage.getItem('excel-state')) || initialState;
 
 const store = new Store(rootReducer, storageState);
