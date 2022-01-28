@@ -1,3 +1,5 @@
+import * as actions from '@/redux/actions';
+
 export class Dom {
 	constructor(selector) {
 		this.$el = typeof selector === 'string'
@@ -23,6 +25,7 @@ export class Dom {
 	}
 
 	textCell(text) {
+		const id = this.dataset.id;
 		const textContainer = this.$el.querySelector('.text');
 		textContainer.innerText = text;
 	}

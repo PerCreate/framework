@@ -11,3 +11,7 @@ export function storage(key, data = null) {
 	}
 	localStorage.setItem(key, JSON.stringify(data));
 }
+
+export function isEqual(a, b) {
+	return JSON.stringify(a) === JSON.stringify(b);
+}

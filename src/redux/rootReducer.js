@@ -1,7 +1,9 @@
+import * as types from '@/redux/types';
+
 export function rootReducer(state, action) {
+	const data = action.data;
 	switch (action.type) {
-		case 'TABLE_RESIZE':
-			const data = action.data;
+		case types.TABLE_RESIZE:
 			switch (data.resizeElement) {
 				case 'col':
 					var colState = state.colState || {};
@@ -14,6 +16,18 @@ export function rootReducer(state, action) {
 				default:
 					return { ...state };
 			}
+			break;
+		case types.INPUT:
+			var cellState = state.cellState || {};
+			state = { ...state, currentText: data.value };
+			if (!data.id) {
+				return { ...state };
+			}
+			cellState[data.id] = { ...cellState[data.id], content: data.value };
+			return { ...state, cellState, currentText: data.value };
+			break;
+		case types.SELECT_CELL:
+			return { ...state, currentText: data.value };
 			break;
 		default:
 			return state;

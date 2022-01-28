@@ -5,6 +5,7 @@ import { TableSelection } from '@/components/table/TableSelection';
 import { $ } from "../../core/dom";
 import Events from "../../core/Events";
 import * as actions from '@/redux/actions';
+import { isEqual } from "../../core/utils";
 
 export class Table extends ExcelComponent {
 	static className = 'excel__table';
@@ -19,8 +20,8 @@ export class Table extends ExcelComponent {
 	}
 
 	toHTML() {
-		const { colState, rowState } = this.store.state;
-		const tableContent = createTable(150, colState, rowState);
+		const state = this.store.state;
+		const tableContent = createTable(150, state);
 		const table = `
 			<div class="table" tabindex="1">
 				${tableContent}
@@ -43,8 +44,14 @@ export class Table extends ExcelComponent {
 		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
 		// so rows - 2
 		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
-		this.$listen(Events.Formula.INPUT, text => this.selection.currentSelectedCell.textCell(text));
+		this.$listen(Events.Formula.INPUT, text => this.fillCurrentCell(text));
 		this.$listen(Events.Formula.PRESS_ENTER, () => this.selectCell());
+	}
+
+	fillCurrentCell(text) {
+		this.selection.currentSelectedCell.textCell(text);
+		const id = this.selection.currentSelectedCell.id.join(':');
+		this.updateStore(actions.input({ value: text, id }));
 	}
 
 	findCell(rowIndexCurrentCell, colIndexCurrentCell) {

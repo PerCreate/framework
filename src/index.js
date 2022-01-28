@@ -11,7 +11,7 @@ import { storage } from './core/utils';
 const initialState = {
 	colState: {},
 };
-// working баг с выделением
+
 const storageState = JSON.parse(localStorage.getItem('excel-state')) || initialState;
 
 const store = new Store(rootReducer, storageState);
