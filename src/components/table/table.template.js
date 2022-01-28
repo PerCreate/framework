@@ -2,18 +2,23 @@ const CODES = {
 	A: 65,
 	Z: 90
 };
+
+function getStyles(state, index) {
+	var styles = '';
+	if (state[index]) {
+		for (const style in state[index]) {
+			styles += `${style}:${state[index][style]}`;
+		}
+	}
+	return styles;
+}
+
 function createCell(rowIndex, colState = {}) {
 	rowIndex += 1;
 
 	return (cell, index) => {
 		index += 1;
-
-		var cellStyles = '';
-		if (colState[index]) {
-			for (const style in colState[index]) {
-				cellStyles += `${style}:${colState[index][style]}`;
-			}
-		}
+		var cellStyles = getStyles(colState, index);
 
 		return `<div
 			class="cell" 
@@ -34,12 +39,7 @@ function createCell(rowIndex, colState = {}) {
 
 
 function createCol(index, col, colState = {}) {
-	var colStyles = '';
-	if (colState[index]) {
-		for (const style in colState[index]) {
-			colStyles += `${style}:${colState[index][style]}`;
-		}
-	}
+	var colStyles = getStyles(colState, index);
 
 	return `
 			<div
@@ -58,12 +58,7 @@ function createCol(index, col, colState = {}) {
 
 function createRow(index, content, rowState = {}) {
 	const resize = index ? `<div class="row-resize" data-resize="row"></div>` : '';
-	var rowStyles = '';
-	if (rowState[index]) {
-		for (const style in rowState[index]) {
-			rowStyles += `${style}:${rowState[index][style]}`;
-		}
-	}
+	var rowStyles = getStyles(rowState, index);
 
 	return `
 		<div class="row" data-row=${index || 0} style="${rowStyles}">
@@ -80,6 +75,13 @@ function createRow(index, content, rowState = {}) {
 		</div>
 	`;
 }
+/**
+ * 
+ * @param {*} rowsCount 
+ * @param {*} colState state from store for cols and cell
+ * @param {*} rowState state from store for rows
+ * @returns HTML Table element
+ */
 export function createTable(rowsCount = 15, colState, rowState) {
 	const colsCount = CODES.Z - CODES.A + 1;
 	const rows = [];
