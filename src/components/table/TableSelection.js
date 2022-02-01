@@ -30,7 +30,9 @@ export class TableSelection {
 	// $el instanceof DOM === true
 	select($el) {
 		if (!$el instanceof Dom) throw new Error(`${$el} is not an instance of Dom`);
+
 		this.tableComponent.updateStore(actions.selectCell({ value: $el.$el.innerText }));
+
 		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
 			return;
 		}
@@ -55,6 +57,14 @@ export class TableSelection {
 		this.table.focus();
 		this.group = [];
 	}
+
+	focusCell($cell) {
+		const textContainer = $cell.find('.text').$el;
+		$cell.click();
+		$cell.setCursorAtEndElem(textContainer);
+		$cell.addClass('focused');
+	}
+
 	/**
 	 * 
 	 * @param {*} $el element typeof dom
@@ -204,7 +214,7 @@ export class TableSelection {
 
 		if (!isSpecialKey && key.length === 1) {
 			nextCell.textCell('');
-			nextCell.click();
+			this.focusCell(nextCell);
 			dispatchInput();
 			return;
 		}
@@ -219,9 +229,7 @@ export class TableSelection {
 						this.select(nextCell);
 					} else {
 						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell);
-						textContainer = nextCell.find('.text');
-						nextCell.click();
-						nextCell.setCursorAtEndElem(textContainer.$el);
+						this.focusCell(nextCell);
 					}
 					break;
 				case 'Tab':

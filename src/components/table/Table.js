@@ -85,6 +85,10 @@ export class Table extends ExcelComponent {
 	onMousedown(event) {
 		var el = event.target;
 		const shiftKey = event.shiftKey;
+		// That mouse click could change cursor position in the input 
+		if (el.isEqualNode(document.activeElement)) {
+			return;
+		}
 
 		if (el.dataset.resize) {
 			switch (el.dataset.resize) {
@@ -113,9 +117,7 @@ export class Table extends ExcelComponent {
 
 	onDblclick(event) {
 		const closestCell = $(event.target.closest('.cell') || event.target);
-		const textContainer = closestCell.find('.text').$el;
-		closestCell.click();
-		closestCell.setCursorAtEndElem(textContainer);
+		this.selection.focusCell(closestCell);
 	}
 
 	onKeydown(event) {

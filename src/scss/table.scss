@@ -141,11 +141,25 @@
 			}
 		}
 
+		.text {
+			width: 100%;
+			height: 100%;
+		}
+
 		&.selected {
 			border: 2px solid $primary-color;
+			padding: 3px;
 			background-color: $cell-bg;
 			z-index: 3;
+
+			.text {
+				pointer-events: none;
+			}
+		}
+
+		&.focused {
 			overflow: visible;
+			background-color: unset;
 		}
 
 		&.leftBorder {
@@ -178,11 +192,6 @@
 					display: block;
 				}
 			}
-		}
-
-		.text {
-			width: 100%;
-			height: 100%;
 		}
 	}
 }
