@@ -1,5 +1,7 @@
 import Events from "../../core/Events";
 import { ExcelComponent } from "../../core/ExcelComponent";
+import * as actions from '@/redux/actions';
+import { isEqual } from "../../core/utils";
 
 export class Formula extends ExcelComponent {
 	static className = 'excel__formula';
@@ -8,6 +10,7 @@ export class Formula extends ExcelComponent {
 		super($root, {
 			name: 'Formula',
 			listeners: ['input', 'keydown'],
+			subscribe: ['currentText'],
 			...options
 		});
 
@@ -20,15 +23,26 @@ export class Formula extends ExcelComponent {
 		`;
 	}
 
+	storeChanged(changes) {
+		if (!isEqual(this.input.$el.innerText, changes.currentText)) {
+			this.input.text(changes.currentText);
+		}
+	}
+
 	init() {
 		super.init();
 		this.input = this.$root.find('.input');
-		this.$listen(Events.Table.INPUT, event => this.fillInput(event));
-		this.$listen(Events.Table.SELECTING_CELL, event => this.fillInput(event));
+		this.setInitialState();
+	}
+
+	setInitialState() {
+		const contentFirstCell = this.store.state.cellState['1:1']?.content || '';
+		this.input.text(contentFirstCell);
 	}
 
 	onInput(event) {
 		this.$dispatch(Events.Formula.INPUT, event.target.innerText);
+		setTimeout(() => this.updateStore(actions.input({ value: event.target.innerText })), 0);
 	}
 
 	onDestroy(event) {

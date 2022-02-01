@@ -1,3 +1,5 @@
+import * as actions from '@/redux/actions';
+
 export class Dom {
 	constructor(selector) {
 		this.$el = typeof selector === 'string'
@@ -23,6 +25,7 @@ export class Dom {
 	}
 
 	textCell(text) {
+		const id = this.dataset.id;
 		const textContainer = this.$el.querySelector('.text');
 		textContainer.innerText = text;
 	}
@@ -62,6 +65,13 @@ export class Dom {
 
 	closest(selector) {
 		return (this.$el.closest(selector)) || this.$el;
+	}
+
+	css(styles) {
+		if (typeof styles !== 'object') throw new Error(`For Dom.css method use only object format! Format ${styles} is ${typeof styles}`);
+		for (const style in styles) {
+			this.$el.style[style] = styles[style];
+		}
 	}
 
 	addClass(className) {

@@ -2,29 +2,59 @@ const CODES = {
 	A: 65,
 	Z: 90
 };
-function createCell(rowIndex) {
 
-	return (cell, index) => `<div
+function getStyles(state, index) {
+	var styles = '';
+	if (state[index]) {
+		for (const style in state[index]) {
+			styles += `${style}:${state[index][style]}`;
+		}
+	}
+	return styles;
+}
+
+function getContent(state, index) {
+	if (state[index]) {
+		return state[index].content;
+	}
+	return '';
+}
+
+function createCell(rowIndex, colState = {}, cellState = {}) {
+	rowIndex += 1;
+
+	return (cell, index) => {
+		index += 1;
+		var id = `${rowIndex}:${index}`;
+		var cellStyles = getStyles(colState, index);
+		var content = getContent(cellState, id);
+
+		return `<div
 			class="cell" 
 			contenteditable
 			data-cell=${index}
-			data-id=${rowIndex}:${index}
+			data-id=${id}
+			style="${cellStyles}"
 			>
 			${cell}
-			<div class="text" data-cell="text"></div>
+			<div class="text" data-cell="text">${content}</div>
 			<div class="cell-selector" data-cell="selector" contenteditable="false">
 				<div class="selector" data-cell="selector"></div>
 			</div>
 		</div>
 	`;
+	};
 };
 
 
-function createCol(index, col) {
+function createCol(index, col, colState = {}) {
+	var colStyles = getStyles(colState, index);
+
 	return `
 			<div
 				class="column"
 				data-col=${index}
+				style="${colStyles}"
 				unselectable="on"
 				onselectstart="return false;"
 				onmousedown="return false;"
@@ -35,11 +65,12 @@ function createCol(index, col) {
 	`;
 }
 
-function createRow(index, content) {
+function createRow(index, content, rowState = {}) {
 	const resize = index ? `<div class="row-resize" data-resize="row"></div>` : '';
+	var rowStyles = getStyles(rowState, index);
 
 	return `
-		<div class="row">
+		<div class="row" data-row=${index || 0} style="${rowStyles}">
 			<div
 				class="row-info"
 				unselectable="on"
@@ -53,7 +84,15 @@ function createRow(index, content) {
 		</div>
 	`;
 }
-export function createTable(rowsCount = 150) {
+/**
+ * 
+ * @param {*} rowsCount 
+ * @param {*} colState state from store for cols and cell
+ * @param {*} rowState state from store for rows
+ * @returns HTML Table element
+ */
+export function createTable(rowsCount = 15, state) {
+	const { rowState, colState, cellState } = state;
 	const colsCount = CODES.Z - CODES.A + 1;
 	const rows = [];
 
@@ -62,7 +101,7 @@ export function createTable(rowsCount = 150) {
 		.map((el, index) => {
 			return String.fromCharCode(CODES.A + index);
 		})
-		.map((el, index) => createCol(index + 1, el))
+		.map((el, index) => createCol(index + 1, el, colState))
 		.join('');
 
 	rows.push(createRow(null, cols));
@@ -70,10 +109,10 @@ export function createTable(rowsCount = 150) {
 	for (let row = 0; row < rowsCount; row += 1) {
 		const cells = new Array(colsCount)
 			.fill('')
-			.map(createCell(row))
+			.map(createCell(row, colState, cellState))
 			.join('');
 
-		rows.push(createRow(row + 1, cells));
+		rows.push(createRow(row + 1, cells, rowState));
 	}
 
 	return rows.join('');

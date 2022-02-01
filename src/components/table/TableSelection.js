@@ -1,5 +1,6 @@
 import { $, Dom } from "../../core/dom";
 import Events from "../../core/Events";
+import * as actions from '@/redux/actions';
 export class TableSelection {
 	static selected = 'selected';
 	static groupSelected = {
@@ -29,7 +30,9 @@ export class TableSelection {
 	// $el instanceof DOM === true
 	select($el) {
 		if (!$el instanceof Dom) throw new Error(`${$el} is not an instance of Dom`);
-		this.tableComponent.$dispatch(Events.Table.SELECTING_CELL, $el.$el.innerText);
+
+		this.tableComponent.updateStore(actions.selectCell({ value: $el.$el.innerText }));
+
 		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
 			return;
 		}
@@ -54,6 +57,14 @@ export class TableSelection {
 		this.table.focus();
 		this.group = [];
 	}
+
+	focusCell($cell) {
+		const textContainer = $cell.find('.text').$el;
+		$cell.click();
+		$cell.setCursorAtEndElem(textContainer);
+		$cell.addClass('focused');
+	}
+
 	/**
 	 * 
 	 * @param {*} $el element typeof dom
@@ -166,7 +177,7 @@ export class TableSelection {
 		}
 	}
 
-	keypress(key, isSpecialKey, event, cb) {
+	keypress(key, isSpecialKey, event) {
 		const idCurrentCell = this.currentSelectedCell.id;
 		const rowIndexCurrentCell = +idCurrentCell[0];
 		const colIndexCurrentCell = +idCurrentCell[1];
@@ -178,10 +189,6 @@ export class TableSelection {
 		const isFirstRow = rowIndexCurrentCell === 0;
 		const isFirstCol = colIndexCurrentCell === 0;
 
-		const findCell = (rowIndexCurrentCell, colIndexCurrentCell) => {
-			return this.$tableRoot.find(`[data-id="${rowIndexCurrentCell}:${colIndexCurrentCell}"]`);
-		};
-
 		const isSelectedCellFocused = () => {
 			const idActiveElement = document.activeElement?.dataset?.id?.split(':');
 			if (!idActiveElement) return false;
@@ -190,74 +197,77 @@ export class TableSelection {
 			return rowActiveElement === rowIndexCurrentCell && colActiveElement === colIndexCurrentCell;
 		};
 
-
 		var nextCell, text;
-		nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell);
-		const textContainer = nextCell.find('.text').$el;
+		nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell);
+		var textContainer = nextCell.find('.text');
+
+		const dispatchInput = () => {
+			const id = idCurrentCell.join(':');
+			// use timeout to execute dispatch after input event 
+			setTimeout(() => this.tableComponent.updateStore(actions.input({ value: textContainer.$el.innerText, id })), 0);
+		};
 
 		if (isSelectedCellFocused() && key !== 'Enter') {
-			// use timeout to execute dispatch after input event 
-			setTimeout(() => this.tableComponent.$dispatch(Events.Table.SELECTING_CELL, textContainer.innerText), 0);
+			dispatchInput();
 			return;
 		}
 
 		if (!isSpecialKey && key.length === 1) {
-			textContainer.innerText = '';
-			nextCell.click();
-			// use timeout to execute dispatch after input event
-			setTimeout(() => this.tableComponent.$dispatch(Events.Table.SELECTING_CELL, textContainer.innerText), 0);
+			nextCell.textCell('');
+			this.focusCell(nextCell);
+			dispatchInput();
 			return;
 		}
+
 		if (isSpecialKey) {
 			event.preventDefault();
 			switch (key) {
 				case 'Enter':
 					if (isSelectedCellFocused()) {
 						if (isLastRow) return;
-						nextCell = findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
 						this.select(nextCell);
 					} else {
-						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell);
-						const textContainer = nextCell.find('.text').$el;
-						nextCell.click();
-						nextCell.setCursorAtEndElem(textContainer);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell);
+						this.focusCell(nextCell);
 					}
 					break;
 				case 'Tab':
 				case 'ArrowRight':
 					if (isLastCell) {
 						if (isLastRow) return;
-						nextCell = findCell(rowIndexCurrentCell + 1, 0);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, 0);
 					} else {
-						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell + 1);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell + 1);
 					}
 					this.select(nextCell);
 					break;
 				case 'ArrowDown':
 					if (isLastRow) return;
-					nextCell = findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
+					nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, colIndexCurrentCell);
 					this.select(nextCell);
 					break;
 				case 'ArrowUp':
 					if (isFirstRow) return;
-					nextCell = findCell(rowIndexCurrentCell - 1, colIndexCurrentCell);
+					nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, colIndexCurrentCell);
 					this.select(nextCell);
 					break;
 				case 'ArrowLeft':
 					if (isFirstCol) {
 						if (!isFirstRow) {
-							nextCell = findCell(rowIndexCurrentCell - 1, colsInTable);
+							nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, colsInTable);
 						}
 					} else {
-						nextCell = findCell(rowIndexCurrentCell, colIndexCurrentCell - 1);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell - 1);
 					}
 					this.select(nextCell);
 					break;
 				case 'Delete':
 				case 'Backspace':
 					if (!isSelectedCellFocused()) {
-						textContainer.innerText = '';
+						nextCell.textCell('');
 						nextCell.click();
+						dispatchInput();
 					}
 					break;
 				default:
