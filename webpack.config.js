@@ -38,7 +38,7 @@ module.exports = {
 		path: path.resolve(__dirname, 'dist')
 	},
 	resolve: {
-		extensions: ['.js'],
+		extensions: ['.js', '.ts', '.tsx'],
 		alias: {
 			'@': path.resolve(__dirname, 'src'),
 			'@core': path.resolve(__dirname, 'src/core')
@@ -88,6 +88,11 @@ module.exports = {
 				test: /\.js$/,
 				exclude: /node_modules/,
 				use: jsLoaders()
+			},
+			{
+				test: /\.tsx?$/,
+				exclude: /node_modules/,
+				use: 'ts-loader'
 			}
 		]
 	}

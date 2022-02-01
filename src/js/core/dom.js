@@ -1,4 +1,3 @@
-import * as actions from '@/redux/actions';
 
 export class Dom {
 	constructor(selector) {

@@ -1,6 +1,6 @@
-import { $, Dom } from "../../core/dom";
-import Events from "../../core/Events";
-import * as actions from '@/redux/actions';
+import { $, Dom } from "@/js/core/dom";
+import * as actions from '@/js/redux/actions';
+
 export class TableSelection {
 	static selected = 'selected';
 	static groupSelected = {
@@ -28,7 +28,7 @@ export class TableSelection {
 	}
 
 	// $el instanceof DOM === true
-	select($el) {
+	async select($el) {
 		if (!$el instanceof Dom) throw new Error(`${$el} is not an instance of Dom`);
 
 		this.tableComponent.updateStore(actions.selectCell({ value: $el.$el.innerText }));

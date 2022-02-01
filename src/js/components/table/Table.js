@@ -1,11 +1,11 @@
-import { ExcelComponent } from "../../core/ExcelComponent";
+import { ExcelComponent } from "@/js/core/ExcelComponent";
 import tableResize from "./table.resize";
 import { createTable } from "./table.template";
-import { TableSelection } from '@/components/table/TableSelection';
-import { $ } from "../../core/dom";
-import Events from "../../core/Events";
-import * as actions from '@/redux/actions';
-import { isEqual } from "../../core/utils";
+import { TableSelection } from '@/js/components/table/TableSelection';
+import { $ } from "@/js/core/dom";
+import Events from "@/js/core/Events";
+import * as actions from '@/js/redux/actions';
+import { isEqual } from "@/js/core/utils";
 
 export class Table extends ExcelComponent {
 	static className = 'excel__table';

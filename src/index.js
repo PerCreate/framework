@@ -1,12 +1,12 @@
-import { Excel } from '@/components/excel/Excel';
-import { Header } from '@/components/header/Header';
-import { Toolbar } from '@/components/toolbar/Toolbar';
-import { Formula } from '@/components/formula/Formula';
-import { Table } from '@/components/table/Table';
+import { Excel } from '@/js/components/excel/Excel';
+import { Header } from '@/js/components/header/Header';
+import { Toolbar } from '@/js/components/toolbar/Toolbar';
+import { Formula } from '@/js/components/formula/Formula';
+import { Table } from '@/js/components/table/Table';
 import './scss/index.scss';
-import { Store } from './core/createStore';
-import { rootReducer } from './redux/rootReducer';
-import { storage } from './core/utils';
+import { Store } from '@/js/core/createStore';
+import { rootReducer } from '@/js/redux/rootReducer';
+import { storage } from '@/js/core/utils';
 
 const initialState = {
 	colState: {},

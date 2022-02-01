@@ -1,7 +1,7 @@
-import Events from "../../core/Events";
-import { ExcelComponent } from "../../core/ExcelComponent";
-import * as actions from '@/redux/actions';
-import { isEqual } from "../../core/utils";
+import Events from "@/js/core/Events";
+import { ExcelComponent } from "@/js/core/ExcelComponent";
+import * as actions from '@/js/redux/actions';
+import { isEqual } from "@/js/core/utils";
 
 export class Formula extends ExcelComponent {
 	static className = 'excel__formula';
