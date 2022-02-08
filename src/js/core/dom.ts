@@ -1,7 +1,10 @@
-import * as actions from '@/redux/actions';
 
 export class Dom {
-	constructor(selector) {
+	public $el: HTMLElement;
+
+
+
+	constructor(selector: string | HTMLElement) {
 		this.$el = typeof selector === 'string'
 			? document.querySelector(selector)
 			: selector;
@@ -15,7 +18,7 @@ export class Dom {
 		return this.$el.dataset.id?.split(':') || null;
 	}
 
-	html(html) {
+	html(html: string) {
 		if (typeof html === 'string') {
 			this.$el.innerHTML = html;
 			return this;
@@ -24,13 +27,12 @@ export class Dom {
 		return this.$el.outerHTML.trim();
 	}
 
-	textCell(text) {
-		const id = this.dataset.id;
-		const textContainer = this.$el.querySelector('.text');
+	textCell(text: string) {
+		const textContainer = this.$el.querySelector('.text') as HTMLElement;
 		textContainer.innerText = text;
 	}
 
-	text(text) {
+	text(text: string) {
 		this.$el.innerText = text;
 	}
 
@@ -39,12 +41,12 @@ export class Dom {
 		return this;
 	}
 
-	click(event) {
+	click() {
 		const isCurrentElemActive = document.activeElement.isEqualNode(this.$el);
 		!isCurrentElemActive && this.$el.focus();
 	}
 
-	setCursorAtEndElem($el) {
+	setCursorAtEndElem($el: HTMLElement) {
 		const selection = window.getSelection();
 		const range = document.createRange();
 		selection.removeAllRanges();
@@ -54,37 +56,37 @@ export class Dom {
 		$el.focus();
 	}
 
-	find(selector) {
-		return $(this.$el.querySelector(selector));
+	find(selector: string) {
+		return $(this.$el.querySelector(selector) as HTMLElement);
 	}
 
-	findAll(selector) {
+	findAll(selector: string) {
 		const elements = this.$el.querySelectorAll(selector);
-		return Array.from(elements).map($);
+		return Array.from(elements).map((elem: HTMLElement) => $(elem));
 	}
 
-	closest(selector) {
-		return (this.$el.closest(selector)) || this.$el;
+	closest(selector: string) {
+		const searchElement = this.$el.closest(selector) as HTMLElement;
+		return $(searchElement);
 	}
 
-	css(styles) {
-		if (typeof styles !== 'object') throw new Error(`For Dom.css method use only object format! Format ${styles} is ${typeof styles}`);
-		for (const style in styles) {
+	css(styles: { [prop: string]: string; }) {
+		for (const style of Object.keys(styles)) {
 			this.$el.style[style] = styles[style];
 		}
 	}
 
-	addClass(className) {
+	addClass(className: string) {
 		this.$el.classList.add(className);
 	}
 
-	removeClass(className) {
+	removeClass(className: string) {
 		this.$el.classList.remove(className);
 	}
 
-	removeAllClassBesides(...classes) {
+	removeAllClassBesides(...classes: string[]) {
 		if (classes.length) {
-			var newClasses = [];
+			var newClasses: string[] = [];
 
 			classes.forEach(className => {
 				if (this.$el.classList.contains(className)) {
@@ -92,28 +94,28 @@ export class Dom {
 				}
 			});
 
-			this.$el.classList.remove(...this.$el.classList);
-
-			newClasses.forEach(className => {
-				this.$el.classList.add(className);
-
-			});
+			const classList = this.$el.classList.value.split(' ');
+			for (const className of classList) {
+				!newClasses.includes(className) && this.$el.classList.remove(className);
+			}
 			return;
 		}
-		this.$el.classList.remove(...this.$el.classList);
+		for (const className in this.$el.classList) {
+			this.$el.classList.remove(className);
+		}
 	}
 
-	on(eventType, callback) {
+	on(eventType: string, callback: any) {
 		this.$el.addEventListener(eventType, callback);
 	}
 
-	off(eventType, callback) {
+	off(eventType: string, callback: any) {
 		this.$el.removeEventListener(eventType, callback);
 	}
 	/**
 	 * Кастомный append!
 	 */
-	append(node) {
+	append(node: Dom | Node) {
 		if (node instanceof Dom) {
 			node = node.$el;
 		}
@@ -127,11 +129,11 @@ export class Dom {
 	}
 }
 
-export function $(selector) {
+export function $(selector: string | HTMLElement) {
 	return new Dom(selector);
 }
 
-$.create = (tagName, classes = '') => {
+$.create = (tagName: string, classes = ''): Dom => {
 	const el = document.createElement(tagName);
 	if (classes) {
 		el.classList.add(classes);

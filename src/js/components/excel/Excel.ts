@@ -1,9 +1,18 @@
-import { $ } from "../../core/dom";
-import { Emitter } from "../../core/Emitter";
-import { StoreSubscriber } from "../../core/StoreSubscriber";
+import { $ } from './../../core/dom';
+import { StoreSubscriber } from './../../core/StoreSubscriber';
+import { componentOptions } from './../../core/ExcelComponent';
+import { Emitter } from './../../core/Emitter';
+import { Store } from "./../../core/createStore";
 
 export class Excel {
-	constructor(selector, options) {
+	private $el: HTMLElement;
+	private components: any[];
+	private store: Store;
+	private emitter: Emitter;
+	private subscriber: StoreSubscriber;
+
+	constructor(selector: string, options: componentOptions) {
+
 		this.$el = document.querySelector(selector);
 		this.components = options.components || [];
 		this.store = options.store;

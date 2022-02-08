@@ -1,16 +1,17 @@
-import { ExcelComponent } from "../../core/ExcelComponent";
+import { Dom } from "../../core/dom";
+import { ExcelComponent, componentOptions } from "../../core/ExcelComponent";
 
 export class Header extends ExcelComponent {
 	static className = 'excel__header';
 
-	constructor($root, options) {
+	constructor($root: Dom, options: componentOptions) {
 		super($root, {
-			name: 'Formula',
+			name: 'Header',
 			...options
 		});
 
 	}
-	
+
 	toHTML() {
 		return `
 			<input type="text" class="input" value="Новая таблица" />

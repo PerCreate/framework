@@ -1,6 +1,7 @@
+import { Table } from './Table';
 import { $, Dom } from "../../core/dom";
-import Events from "../../core/Events";
-import * as actions from '@/redux/actions';
+import * as actions from '../../redux/actions';
+
 export class TableSelection {
 	static selected = 'selected';
 	static groupSelected = {
@@ -12,7 +13,14 @@ export class TableSelection {
 		last: 'lastCell'
 	};
 
-	constructor($tableRoot, tableComponent) {
+	public group: Array<Dom>;
+	public $allCells: Array<Dom>;
+	public currentSelectedCell: Dom;
+	public tableComponent: Table;
+	public $tableRoot: Dom;
+	public table: HTMLElement;
+
+	constructor($tableRoot: Dom, tableComponent: Table) {
 		this.group = [];
 		this.$allCells = null;
 		this.currentSelectedCell = null;
@@ -28,16 +36,14 @@ export class TableSelection {
 	}
 
 	// $el instanceof DOM === true
-	select($el) {
-		if (!$el instanceof Dom) throw new Error(`${$el} is not an instance of Dom`);
-
+	async select($el: Dom) {
 		this.tableComponent.updateStore(actions.selectCell({ value: $el.$el.innerText }));
 
 		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
 			return;
 		}
 		this.clear();
-		const $closestCell = $($el.closest('.cell'));
+		const $closestCell = $el.closest('.cell');
 		this.group.push($closestCell);
 		this.currentSelectedCell = $closestCell;
 		$closestCell.addClass(TableSelection.selected);
@@ -58,7 +64,7 @@ export class TableSelection {
 		this.group = [];
 	}
 
-	focusCell($cell) {
+	focusCell($cell: Dom) {
 		const textContainer = $cell.find('.text').$el;
 		$cell.click();
 		$cell.setCursorAtEndElem(textContainer);
@@ -71,9 +77,8 @@ export class TableSelection {
 	 * @param {*} selectorMoving boolean - is selecting happening by mousemove
 	 * @param {*} shiftKey boolean - is selecting happening by click with shiftKey
 	 */
-	selectGroup($el, selectorMoving = false, shiftKey = false) {
-		$el = $($el.closest('.cell'));
-
+	selectGroup($el: Dom, selectorMoving = false, shiftKey = false) {
+		$el = $el.closest('.cell');
 		var currentSelected = this.currentSelectedCell;
 		var eventCoordsElem = $el.id;
 		var eventRowIndex = +eventCoordsElem[0];
@@ -141,10 +146,11 @@ export class TableSelection {
 		};
 
 		if (selectorMoving) {
-			const startMoving = (event) => {
+			const startMoving = (event: Event) => {
 				// eventCoordsElem = this.currentSelectedCell.dataset.id.split(':');
 				// Check if new cell under moving mouse has large coordinates then last coords
-				const cellUnderMouse = event.target.closest('.cell') || event.target;
+				const element = event.target as HTMLElement;
+				const cellUnderMouse = element.closest('.cell') as HTMLElement || element;
 				// Check if mouse is out of bounds
 				if (!cellUnderMouse.dataset.cell) {
 					return;
@@ -162,7 +168,7 @@ export class TableSelection {
 				}
 			};
 			// Don't forget to remove listeners
-			const endMoving = (event) => {
+			const endMoving = (event: Event) => {
 				this.$tableRoot.off('mousemove', startMoving);
 				this.$tableRoot.off('mouseup', endMoving);
 				this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
@@ -177,7 +183,7 @@ export class TableSelection {
 		}
 	}
 
-	keypress(key, isSpecialKey, event) {
+	keypress(key: string, isSpecialKey: boolean = false, event: KeyboardEvent) {
 		const idCurrentCell = this.currentSelectedCell.id;
 		const rowIndexCurrentCell = +idCurrentCell[0];
 		const colIndexCurrentCell = +idCurrentCell[1];
@@ -190,14 +196,15 @@ export class TableSelection {
 		const isFirstCol = colIndexCurrentCell === 0;
 
 		const isSelectedCellFocused = () => {
-			const idActiveElement = document.activeElement?.dataset?.id?.split(':');
+			const activeElement = document.activeElement as HTMLElement;
+			const idActiveElement = activeElement?.dataset?.id?.split(':');
 			if (!idActiveElement) return false;
 			const rowActiveElement = +idActiveElement[0];
 			const colActiveElement = +idActiveElement[1];
 			return rowActiveElement === rowIndexCurrentCell && colActiveElement === colIndexCurrentCell;
 		};
 
-		var nextCell, text;
+		var nextCell;
 		nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell);
 		var textContainer = nextCell.find('.text');
 
@@ -255,7 +262,7 @@ export class TableSelection {
 				case 'ArrowLeft':
 					if (isFirstCol) {
 						if (!isFirstRow) {
-							nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, colsInTable);
+							nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, colIndexCurrentCell);
 						}
 					} else {
 						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell - 1);

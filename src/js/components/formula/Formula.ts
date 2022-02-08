@@ -1,12 +1,14 @@
 import Events from "../../core/Events";
-import { ExcelComponent } from "../../core/ExcelComponent";
-import * as actions from '@/redux/actions';
+import { ExcelComponent, componentOptions } from "../../core/ExcelComponent";
+import * as actions from '../../redux/actions';
 import { isEqual } from "../../core/utils";
+import { Dom } from "../../core/dom";
 
 export class Formula extends ExcelComponent {
 	static className = 'excel__formula';
+	private input: Dom;
 
-	constructor($root, options) {
+	constructor($root: Dom, options: componentOptions) {
 		super($root, {
 			name: 'Formula',
 			listeners: ['input', 'keydown'],
@@ -23,7 +25,7 @@ export class Formula extends ExcelComponent {
 		`;
 	}
 
-	storeChanged(changes) {
+	storeChanged(changes: any) {
 		if (!isEqual(this.input.$el.innerText, changes.currentText)) {
 			this.input.text(changes.currentText);
 		}
@@ -40,20 +42,21 @@ export class Formula extends ExcelComponent {
 		this.input.text(contentFirstCell);
 	}
 
-	onInput(event) {
-		this.$dispatch(Events.Formula.INPUT, event.target.innerText);
-		setTimeout(() => this.updateStore(actions.input({ value: event.target.innerText })), 0);
+	onInput(event: Event) {
+		const input = event.target as HTMLElement;
+		this.$dispatch(Events.Formula.INPUT, input.innerText);
+		setTimeout(() => this.updateStore(actions.input({ value: input.innerText })), 0);
 	}
 
-	onDestroy(event) {
+	onDestroy(event: string) {
 		console.log('destroyed', this);
 	}
 
-	fillInput(text) {
+	fillInput(text: string) {
 		this.input.text(text);
 	}
 
-	onKeydown(event) {
+	onKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter') {
 			event.preventDefault();
 			this.$dispatch(Events.Formula.PRESS_ENTER);
