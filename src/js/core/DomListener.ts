@@ -1,7 +1,12 @@
+import { Dom } from "./dom";
 import { capitalize } from "./utils";
 
 export class DomListener {
-	constructor($root, listeners = []) {
+	public $root: Dom;
+	public listeners: string[];
+	public name: string;
+
+	constructor($root: Dom, listeners: string[] = []) {
 		if (!$root) {
 			throw new Error('no $root provided for DomListener!');
 		}
@@ -29,6 +34,6 @@ export class DomListener {
 	}
 }
 
-function getMethodName(eventName) {
+function getMethodName(eventName: string) {
 	return 'on' + capitalize(eventName);
 }

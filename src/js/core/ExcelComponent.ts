@@ -2,16 +2,24 @@ import { Store } from "./createStore";
 import { Dom } from "./dom";
 import { DomListener } from "./DomListener";
 import { Emitter } from './Emitter';
+import { action } from '../redux/actions';
+
+export interface componentOptions {
+	components: Array<ExcelComponent>;
+	listeners: string[];
+	name: string;
+	store: Store;
+	emitter: Emitter;
+	subscribe: string[];
+}
 
 export class ExcelComponent extends DomListener {
-	private name: string;
-	private store: Store;
-	private emitter: Emitter;
-	private subscribe: string[];
-	private unSubscribers: Array<ReturnType<Store['subscribe']>> = [];
+	public store: Store;
+	public emitter: Emitter;
+	public subscribe: string[];
+	public unSubscribers: Array<ReturnType<Store['subscribe']>> = [];
 
-
-	constructor($root: Dom, options: any = {}) {
+	constructor($root: Dom, options: componentOptions) {
 		super($root, options.listeners);
 		this.name = options.name;
 		this.store = options.store;
@@ -29,22 +37,22 @@ export class ExcelComponent extends DomListener {
 		return '';
 	}
 
-	$listen(event, fn) {
-		const unSub = this.emitter.listen(event, fn);
+	$listen(event: string, fn: (...args: any) => void) {
+		const unSub: any = this.emitter.listen(event, fn);
 		this.unSubscribers.push(unSub);
 	}
 
-	$dispatch(event, ...args) {
+	$dispatch(event: string, ...args: any) {
 		this.emitter.dispatch(event, ...args);
 	}
 
 	// Redux
-	updateStore(action) {
+	updateStore(action: action) {
 		this.store.updateStore(action);
 	}
-	storeChanged() { }
+	storeChanged(changes: any) { }
 
-	isWatching(key) {
+	isWatching(key: string) {
 		return this.subscribe.includes(key);
 	}
 
@@ -54,6 +62,6 @@ export class ExcelComponent extends DomListener {
 
 	destroy() {
 		this.removeDomListeners();
-		this.unSubscribers.forEach(unSub => unSub());
+		this.unSubscribers.forEach(unSub => unSub.unsubscribe());
 	}
 }

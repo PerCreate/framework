@@ -1,3 +1,4 @@
+import { Table } from './Table';
 import { $ } from "../../core/dom";
 
 /**
@@ -8,13 +9,12 @@ import { $ } from "../../core/dom";
 	 * @param {*} event 
 	 * @param {*} resizeElement 'col' or 'row'
 	 */
-export default (event, resizeElement, tableComponent) => {
+export default (event: Event, resizeElement: string, tableComponent: Table) => {
 	return new Promise(resolve => {
-		const el = event.target;
-		const table = el.closest('.excel__table>.table');
-		const row = el.closest('.row');
-		const col = el.closest('.column');
-		var currentPosition, currentValue, minValue;
+		const el = event.target as HTMLElement;
+		const row = el.closest('.row') as HTMLElement;
+		const col = el.closest('.column') as HTMLElement;
+		var currentPosition: number, currentValue: number, minValue: number;
 
 		switch (el.dataset.resize) {
 			case 'col':
@@ -28,12 +28,12 @@ export default (event, resizeElement, tableComponent) => {
 				minValue = 24;
 		}
 
-		const isNeedNewValue = (prop, minValue) => {
+		const isNeedNewValue = (prop: string, minValue: number) => {
 			if (!prop) return false;
-			return prop.replace(/[^0-9]/g, '') >= minValue;
+			return +prop.replace(/[^0-9]/g, '') >= minValue;
 		};
 
-		const setValue = (element, value, show = false) => {
+		const setValue = (element: string, value: number | string, show = false) => {
 			switch (element) {
 				case 'col':
 					el.style.left = value + 'px';
@@ -43,12 +43,12 @@ export default (event, resizeElement, tableComponent) => {
 					break;
 			}
 			if (show) {
-				el.style.opacity = 1;
-				el.style.zIndex = 1;
+				el.style.opacity = '1';
+				el.style.zIndex = '1';
 			}
 		};
 
-		const startMoving = (event) => {
+		const startMoving = (event: MouseEvent) => {
 			var newValue;
 
 			switch (resizeElement) {
@@ -73,7 +73,7 @@ export default (event, resizeElement, tableComponent) => {
 			document.removeEventListener('mousemove', startMoving);
 			document.removeEventListener('mouseup', endMoving);
 
-			var value, indexColumn, indexRow;
+			var value: string, indexColumn, indexRow;
 			switch (resizeElement) {
 				case 'row':
 					value = isNeedNewValue(el.style.top, minValue) ? el.style.top : row.style.height;
@@ -93,7 +93,7 @@ export default (event, resizeElement, tableComponent) => {
 					break;
 			}
 
-			el.style = null;
+			el.removeAttribute('style');
 			resolve({
 				resizeElement,
 				value,

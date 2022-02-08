@@ -1,6 +1,6 @@
 
 export class Dom {
-	private $el: HTMLElement;
+	public $el: HTMLElement;
 
 
 
@@ -28,7 +28,6 @@ export class Dom {
 	}
 
 	textCell(text: string) {
-		const id = this.dataset.id;
 		const textContainer = this.$el.querySelector('.text') as HTMLElement;
 		textContainer.innerText = text;
 	}
@@ -67,12 +66,13 @@ export class Dom {
 	}
 
 	closest(selector: string) {
-		return (this.$el.closest(selector)) || this.$el;
+		const searchElement = this.$el.closest(selector) as HTMLElement;
+		return $(searchElement);
 	}
 
 	css(styles: { [prop: string]: string; }) {
 		for (const style of Object.keys(styles)) {
-			this.$el.setAttribute(style, styles[style]);
+			this.$el.style[style] = styles[style];
 		}
 	}
 
@@ -86,7 +86,7 @@ export class Dom {
 
 	removeAllClassBesides(...classes: string[]) {
 		if (classes.length) {
-			var newClasses = [''];
+			var newClasses: string[] = [];
 
 			classes.forEach(className => {
 				if (this.$el.classList.contains(className)) {
@@ -94,14 +94,10 @@ export class Dom {
 				}
 			});
 
-			for (const className in this.$el.classList) {
-				this.$el.classList.remove(className);
+			const classList = this.$el.classList.value.split(' ');
+			for (const className of classList) {
+				!newClasses.includes(className) && this.$el.classList.remove(className);
 			}
-
-			newClasses.forEach(className => {
-				this.$el.classList.add(className);
-
-			});
 			return;
 		}
 		for (const className in this.$el.classList) {
@@ -109,11 +105,11 @@ export class Dom {
 		}
 	}
 
-	on(eventType: string, callback: EventListenerObject) {
+	on(eventType: string, callback: any) {
 		this.$el.addEventListener(eventType, callback);
 	}
 
-	off(eventType: string, callback: EventListenerObject) {
+	off(eventType: string, callback: any) {
 		this.$el.removeEventListener(eventType, callback);
 	}
 	/**

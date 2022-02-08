@@ -15,7 +15,7 @@ export interface State {
 }
 
 export class Store {
-	private state: State;
+	public state: State;
 	private listeners: { (state: State): void; }[] = [];
 	private rootReducer: Function;
 
@@ -24,7 +24,7 @@ export class Store {
 		this.rootReducer = rootReducer;
 	}
 
-	subscribe(fn: (state: State) => void): { unsubscribe: Function; } {
+	subscribe(fn: (state: State) => void): { unsubscribe: (...args: any) => void; } {
 		this.listeners.push(fn);
 		return {
 			unsubscribe() {
