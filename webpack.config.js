@@ -3,6 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
@@ -47,9 +48,10 @@ module.exports = {
 	devtool: isDev ? 'source-map' : false,
 	devServer: {
 		port: 3000,
-		hot: isDev
+		hot: isDev,
 	},
 	plugins: [
+		new NodePolyfillPlugin(),
 		new CleanWebpackPlugin(),
 		new HTMLWebpackPlugin({
 			template: 'index.html',
