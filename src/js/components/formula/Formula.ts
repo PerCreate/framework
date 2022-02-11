@@ -38,7 +38,7 @@ export class Formula extends ExcelComponent {
 	}
 
 	setInitialState() {
-		const contentFirstCell = this.store.state.cellState['1:1']?.content || '';
+		const contentFirstCell = this.store.state.cellState && (this.store.state.cellState['1:1']?.content || '');
 		this.input.text(contentFirstCell);
 	}
 
