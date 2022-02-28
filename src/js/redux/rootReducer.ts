@@ -29,7 +29,12 @@ export function rootReducer(state: State, action: action) {
 			return { ...state, cellState, currentText: data.value };
 			break;
 		case types.SELECT_CELL:
-			return { ...state, currentText: data.value };
+			return { ...state, currentText: data.value, currentCell: data.id };
+			break;
+		case types.TOOLBAR_BUTTON:
+			var cellState: State['cellState'] = state.cellState || {};
+			cellState[state.currentCell] = Object.assign(cellState[state.currentCell] || {}, data.cellState);
+			return { ...state, ...cellState };
 			break;
 		default:
 			return state;

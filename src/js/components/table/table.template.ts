@@ -9,7 +9,7 @@ function getStyles(state: State['colState'] | State['rowState'], index: number) 
 	var styles = '';
 	if (state[index]) {
 		for (const style in state[index]) {
-			styles += `${style}:${state[index][style]}`;
+			styles += `${style}:${state[index][style]}; `;
 		}
 	}
 	return styles;
@@ -22,6 +22,17 @@ function getContent(state: State['cellState'], index: string) {
 	return '';
 }
 
+function getCellState(state: State['cellState'], index: string) {
+	var styles = {};
+	if (state[index]) {
+		for (const style in state[index]) {
+			if (style === 'content') continue;
+			styles[style] = state[index][style];
+		}
+	}
+	return styles;
+}
+
 function createCell(rowIndex: number, colState = {}, cellState = {}) {
 	rowIndex += 1;
 
@@ -30,13 +41,16 @@ function createCell(rowIndex: number, colState = {}, cellState = {}) {
 		var id = `${rowIndex}:${index}`;
 		var cellStyles = getStyles(colState, index);
 		var content = getContent(cellState, id);
+		var currentCellState = getCellState(cellState, id);
+
+		// const style = `sty`
 
 		return `<div
 			class="cell" 
 			contenteditable
 			data-cell=${index}
 			data-id=${id}
-			style="${cellStyles}"
+			style="${cellStyles} ${currentCellState}"
 			>
 			${cell}
 			<div class="text" data-cell="text">${content}</div>

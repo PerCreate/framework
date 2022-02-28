@@ -4,6 +4,7 @@ interface data {
 	id?: number | string;
 	value?: string;
 	resizeElement?: string;
+	cellState?: { [style: string]: string; };
 }
 
 export interface action {
@@ -28,6 +29,13 @@ export function input(data: data): action {
 export function selectCell(data: data): action {
 	return {
 		type: types.SELECT_CELL,
+		data
+	};
+}
+
+export function clickToolbarButton(data: data): action {
+	return {
+		type: types.TOOLBAR_BUTTON,
 		data
 	};
 }

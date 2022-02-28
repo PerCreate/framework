@@ -1,36 +1,43 @@
-import { Dom } from './../../core/dom';
-import { ExcelComponent, componentOptions } from "../../core/ExcelComponent";
+import { ExcelStateComponent } from './../../core/ExcelStateComponent';
+import { $, Dom } from './../../core/dom';
+import { componentOptions } from "../../core/ExcelComponent";
+import { createToolbar } from './toolbar.template';
 
-export class Toolbar extends ExcelComponent {
+export class Toolbar extends ExcelStateComponent {
 	static className = 'excel__toolbar';
 
 	constructor($root: Dom, options: componentOptions) {
 		super($root, {
 			name: 'Toolbar',
+			listeners: ['click'],
 			...options
 		});
 	}
 
+	prepare() {
+		this.initState({});
+	}
+
+	get template() {
+		return createToolbar(this.state);
+	}
+
+	onClick(event: MouseEvent) {
+		let $target = $(event.target as HTMLElement);
+
+		if ($target.dataset.type === "button") {
+			$target = $target.closest('.button') || $target;
+			let value = JSON.parse($target.dataset.value);
+			if ($target.dataset.active === "true") {
+				value[Object.keys(value)[0]] = 'none';
+				this.setState(value);
+			} else {
+				this.setState(value);
+			}
+		}
+	}
+
 	toHTML() {
-		return `
-			<div class="button">
-				<div class="material-icons">format_align_left</div>
-				</div>
-			<div class="button">
-				<div class="material-icons">format_align_center</div>
-			</div>
-			<div class="button">
-				<div class="material-icons">format_align_right</div>
-			</div>
-			<div class="button">
-				<div class="material-icons">format_bold</div>
-			</div>
-			<div class="button">
-				<div class="material-icons">format_italic</div>
-			</div>
-			<div class="button">
-				<div class="material-icons">format_underline</div>
-			</div>
-		`;
+		return this.template;
 	}
 }

@@ -46,9 +46,7 @@ export class Table extends ExcelComponent {
 		this.selection.select($cell);
 		const rows = this.$root.findAll('.row');
 		const cols = rows[1].findAll('.cell');
-		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
-		// so rows - 2
-		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
+		this.tableSize = { rows: rows.length - 1, cols: cols.length };
 		this.$listen(Events.Formula.INPUT, text => this.fillCurrentCell(text));
 		this.$listen(Events.Formula.PRESS_ENTER, () => this.selectCell());
 	}
@@ -71,6 +69,10 @@ export class Table extends ExcelComponent {
 		}
 
 	};
+
+	updateStore(changes: any) {
+
+	}
 
 	selectCell() {
 		// set cursor at the end of textContainer

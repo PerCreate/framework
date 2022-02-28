@@ -3,7 +3,7 @@ import { action } from '../redux/actions';
 
 export interface State {
 	cellState?: {
-		[id: string]: { content: string; };
+		[id: string]: { content?: string; };
 	};
 	colState?: {
 		[id: string]: { [style: string]: string; };
@@ -12,6 +12,7 @@ export interface State {
 		[id: string]: { [style: string]: string; };
 	};
 	currentText: string;
+	currentCell: string;
 }
 
 export class Store {
