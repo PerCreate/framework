@@ -32,9 +32,9 @@ export function rootReducer(state: State, action: action) {
 			return { ...state, currentText: data.value, currentCell: data.id };
 			break;
 		case types.TOOLBAR_BUTTON:
-			var cellState: State['cellState'] = state.cellState || {};
-			cellState[state.currentCell] = Object.assign(cellState[state.currentCell] || {}, data.cellState);
-			return { ...state, ...cellState };
+			var cellStyles: State['cellStyles'] = state.cellStyles || {};
+			cellStyles[state.currentCell] = Object.assign(cellStyles[state.currentCell] || {}, data.cellStyles);
+			return { ...state, cellStyles };
 			break;
 		default:
 			return state;

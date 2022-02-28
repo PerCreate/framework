@@ -1,9 +1,13 @@
 
 import { action } from '../redux/actions';
+import { copyDeep } from './utils';
 
 export interface State {
 	cellState?: {
 		[id: string]: { content?: string; };
+	};
+	cellStyles?: {
+		[id: string]: { [style: string]: string; };
 	};
 	colState?: {
 		[id: string]: { [style: string]: string; };
@@ -39,6 +43,6 @@ export class Store {
 	}
 
 	getState() {
-		return JSON.parse(JSON.stringify(this.state));
+		return copyDeep(this.state);
 	}
 }

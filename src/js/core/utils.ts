@@ -15,3 +15,7 @@ export function storage(key: string, data: any = null) {
 export function isEqual(a: any, b: any) {
 	return JSON.stringify(a) === JSON.stringify(b);
 }
+
+export function copyDeep(obj: any) {
+	return JSON.parse(JSON.stringify(obj));
+}

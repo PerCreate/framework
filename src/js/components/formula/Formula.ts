@@ -38,8 +38,10 @@ export class Formula extends ExcelComponent {
 	}
 
 	setInitialState() {
-		const contentFirstCell = this.store.state.cellState['1:1']?.content || '';
-		this.input.text(contentFirstCell);
+		if (this.store.state.cellState) {
+			var contentFirstCell = this.store.state.cellState['1:1']?.content;
+		}
+		this.input.text(contentFirstCell || '');
 	}
 
 	onInput(event: Event) {

@@ -4,7 +4,7 @@ interface data {
 	id?: number | string;
 	value?: string;
 	resizeElement?: string;
-	cellState?: { [style: string]: string; };
+	cellStyles?: { [style: string]: string; };
 }
 
 export interface action {

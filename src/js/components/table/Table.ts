@@ -20,6 +20,7 @@ export class Table extends ExcelComponent {
 		super($root, {
 			name: 'Table',
 			listeners: ['mousedown', 'keydown', 'dblclick'],
+			subscribe: ['cellStyles'],
 			...options
 		});
 	}
@@ -70,8 +71,8 @@ export class Table extends ExcelComponent {
 
 	};
 
-	updateStore(changes: any) {
-
+	storeChanged(changes: any) {
+		console.log(changes);
 	}
 
 	selectCell() {

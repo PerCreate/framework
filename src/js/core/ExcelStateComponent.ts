@@ -22,6 +22,6 @@ export class ExcelStateComponent extends ExcelComponent {
 	setState(newState: any) {
 		this.state = { ...this.state, ...newState };
 		this.$root.html(this.template);
-		this.updateStore(clickToolbarButton({ cellState: { ...this.state } }));
+		this.updateStore(clickToolbarButton({ cellStyles: { ...this.state } }));
 	}
 }
