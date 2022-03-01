@@ -19,3 +19,22 @@ export function isEqual(a: any, b: any) {
 export function copyDeep(obj: any) {
 	return JSON.parse(JSON.stringify(obj));
 }
+
+export function deepMerge(target: Object, ...sources: any): any {
+	if (!sources.length) return target;
+	const source = sources.shift();
+
+	if (typeof target === 'object' && typeof source === 'object') {
+		for (const key in source) {
+			if (typeof source[key] === 'object') {
+				if (!target[key]) target[key] = {};
+				deepMerge(target[key], source[key]);
+			} else {
+				target[key] = source[key];
+			}
+		}
+	}
+
+	return deepMerge(target, ...sources);
+}
+
