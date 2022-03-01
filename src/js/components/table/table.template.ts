@@ -21,36 +21,45 @@ function getContent(state: State['cellState'], index: string) {
 	}
 	return '';
 }
-
+// working сделать работающую установку стилей из ЛС(сейчас устанавливает alignItems: left, а нужно align-items: left)
 function getCellState(state: State['cellState'], index: string) {
-	var styles = {};
-	if (state[index]) {
+	if (state[index] && Object.keys(state[index]).length) {
+		if (Object.keys(state[index]).length === 1) {
+			if (Object.keys(state[index])[0] === 'content') {
+				return '';
+			}
+		}
+
+		var styles = {};
+
 		for (const style in state[index]) {
 			if (style === 'content') continue;
 			styles[style] = state[index][style];
 		}
+		return Object.entries(styles).reduce((result, arrStyles) => {
+			result += `${arrStyles.join(':')}; `;
+			return result;
+		}, '');
 	}
-	return styles;
+	return '';
 }
 
-function createCell(rowIndex: number, colState = {}, cellState = {}) {
+function createCell(rowIndex: number, colState = {}, cellState = {}, cellStyles = {}) {
 	rowIndex += 1;
 
 	return (cell: any, index: number) => {
 		index += 1;
 		var id = `${rowIndex}:${index}`;
-		var cellStyles = getStyles(colState, index);
+		var cellStyle = getStyles(colState, index);
 		var content = getContent(cellState, id);
-		var currentCellState = getCellState(cellState, id);
-
-		// const style = `sty`
+		var currentCellState = getCellState(cellStyles, id);
 
 		return `<div
 			class="cell" 
 			contenteditable
 			data-cell=${index}
 			data-id=${id}
-			style="${cellStyles} ${currentCellState}"
+			style="${cellStyle} ${currentCellState}"
 			>
 			${cell}
 			<div class="text" data-cell="text">${content}</div>
@@ -108,7 +117,7 @@ function createRow(index: number, content: any, rowState = {}) {
  * @returns HTML Table element
  */
 export function createTable(rowsCount = 15, state: State) {
-	const { rowState, colState, cellState } = state;
+	const { rowState, colState, cellState, cellStyles } = state;
 	const colsCount = CODES.Z - CODES.A + 1;
 	const rows = [];
 
@@ -125,7 +134,7 @@ export function createTable(rowsCount = 15, state: State) {
 	for (let row = 0; row < rowsCount; row += 1) {
 		const cells = new Array(colsCount)
 			.fill('')
-			.map(createCell(row, colState, cellState))
+			.map(createCell(row, colState, cellState, cellStyles))
 			.join('');
 
 		rows.push(createRow(row + 1, cells, rowState));

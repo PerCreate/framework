@@ -5,11 +5,13 @@ import { createToolbar } from './toolbar.template';
 
 export class Toolbar extends ExcelStateComponent {
 	static className = 'excel__toolbar';
+	public idCurrentCell: string;
 
 	constructor($root: Dom, options: componentOptions) {
 		super($root, {
 			name: 'Toolbar',
 			listeners: ['click'],
+			subscribe: ['currentCell'],
 			...options
 		});
 	}
@@ -17,9 +19,16 @@ export class Toolbar extends ExcelStateComponent {
 	prepare() {
 		this.initState({});
 	}
-
+	//working сделать устоновку текщих значений при первом рендере
 	get template() {
 		return createToolbar(this.state);
+	}
+
+	storeChanged(changes: any) {
+		this.idCurrentCell = changes.currentCell;
+		const value = this.store.state?.cellStyles[this.idCurrentCell];
+
+		this.setState(value, false);
 	}
 
 	onClick(event: MouseEvent) {
@@ -27,11 +36,12 @@ export class Toolbar extends ExcelStateComponent {
 
 		if ($target.dataset.type === "button") {
 			$target = $target.closest('.button') || $target;
-			let value = JSON.parse($target.dataset.value);
+
 			if ($target.dataset.active === "true") {
-				value[Object.keys(value)[0]] = 'none';
+				let value = JSON.parse($target.dataset.inactivevalue);
 				this.setState(value);
 			} else {
+				let value = JSON.parse($target.dataset.activevalue);
 				this.setState(value);
 			}
 		}

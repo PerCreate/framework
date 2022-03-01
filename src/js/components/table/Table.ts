@@ -72,7 +72,17 @@ export class Table extends ExcelComponent {
 	};
 
 	storeChanged(changes: any) {
-		console.log(changes);
+		const cellStyles = changes[Object.keys(changes).filter((change: any) => change === 'cellStyles')[0]];
+		const idCurrentCell = this.selection.currentSelectedCell.dataset.id;
+
+		if (cellStyles) {
+			for (const key in cellStyles) {
+				if (idCurrentCell === key) {
+					this.selection.currentSelectedCell.css(cellStyles[key]);
+				}
+			}
+
+		}
 	}
 
 	selectCell() {

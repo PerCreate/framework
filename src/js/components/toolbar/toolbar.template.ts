@@ -1,16 +1,19 @@
 type button = {
 	icon: string;
 	active: boolean;
-	value: { [style: string]: string; };
+	activeValue: { [style: string]: string; };
+	inactiveValue: { [style: string]: string; };
 };
 
 function toButton(button: button) {
-	const value = `data-value=${JSON.stringify(button.value)}`;
+	const activeValue = `data-activevalue=${JSON.stringify(button.activeValue)}`;
+	const inactiveValue = `data-inactivevalue=${JSON.stringify(button.inactiveValue)}`;
 
 	const meta: string = `
 		data-type="button"
 		data-active=${button.active}
-		${value}
+		${activeValue}
+		${inactiveValue}
 		`;
 
 	return `<div class="button ${button.active ? 'active' : ''}"
@@ -27,32 +30,38 @@ export function createToolbar(state: any) {
 		{
 			icon: 'format_align_left',
 			active: state.textAlign === 'left',
-			value: { textAlign: 'left' }
+			activeValue: { textAlign: 'left' },
+			inactiveValue: { textAlign: 'unset' },
 		},
 		{
 			icon: 'format_align_center',
 			active: state.textAlign === 'center',
-			value: { textAlign: 'center' }
+			activeValue: { textAlign: 'center' },
+			inactiveValue: { textAlign: 'unset' },
 		},
 		{
 			icon: 'format_align_right',
 			active: state.textAlign === 'right',
-			value: { textAlign: 'right' }
+			activeValue: { textAlign: 'right' },
+			inactiveValue: { textAlign: 'unset' },
 		},
 		{
 			icon: 'format_bold',
 			active: state.fontWeight === 'bold',
-			value: { fontWeight: 'bold' }
+			activeValue: { fontWeight: 'bold' },
+			inactiveValue: { fontWeight: 'normal' },
 		},
 		{
 			icon: 'format_italic',
 			active: state.fontStyle === 'italic',
-			value: { fontStyle: 'italic' }
+			activeValue: { fontStyle: 'italic' },
+			inactiveValue: { fontStyle: 'normal' },
 		},
 		{
 			icon: 'format_underline',
 			active: state.textDecoration === 'underline',
-			value: { textDecoration: 'underline' }
+			activeValue: { textDecoration: 'underline' },
+			inactiveValue: { textDecoration: 'none' },
 		},
 	];
 

@@ -18,9 +18,8 @@ export class StoreSubscriber {
 				if (!isEqual(this.prevState[key], state[key])) {
 					var changes = { [key]: state[key] };
 					components.forEach((component: any) => {
-
 						if (component.isWatching(key)) {
-							component.storeChanged(changes);
+							setTimeout(() => component.storeChanged(changes), 0);
 						}
 					});
 					this.prevState = deepMerge(this.prevState, changes);
