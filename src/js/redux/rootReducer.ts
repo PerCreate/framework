@@ -29,10 +29,10 @@ export function rootReducer(state: State, action: action) {
 			return { ...state, cellState, currentText: data.value };
 			break;
 		case types.SELECT_CELL:
-			if (data.value) {
-				return { ...state, currentText: data.value, currentCell: data.id };
-			} else {
+			if (data.selectedCells?.length) {
 				return { ...state, selectedCells: data.selectedCells };
+			} else {
+				return { ...state, currentText: data.value, currentCell: data.id };
 			}
 			break;
 		case types.TOOLBAR_BUTTON:
