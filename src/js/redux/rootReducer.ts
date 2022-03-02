@@ -48,6 +48,9 @@ export function rootReducer(state: State, action: action) {
 			}
 			return { ...state, cellStyles };
 			break;
+		case types.CHANGE_TABLE_TITLE:
+			return { ...state, tableTitle: data.value };
+			break;
 		default:
 			return state;
 	}

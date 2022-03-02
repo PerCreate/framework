@@ -18,6 +18,7 @@ export interface State {
 	currentText: string;
 	currentCell: string;
 	selectedCells: string[];
+	tableTitle: string;
 }
 
 export class Store {

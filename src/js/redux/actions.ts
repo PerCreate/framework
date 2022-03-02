@@ -40,3 +40,10 @@ export function clickToolbarButton(data: data): action {
 		data
 	};
 }
+
+export function changeTableTitle(data: data): action {
+	return {
+		type: types.CHANGE_TABLE_TITLE,
+		data
+	};
+}

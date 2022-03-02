@@ -1,20 +1,34 @@
-import { Dom } from "../../core/dom";
+import { $, Dom } from "../../core/dom";
 import { ExcelComponent, componentOptions } from "../../core/ExcelComponent";
+import { changeTableTitle } from "../../redux/actions";
 
 export class Header extends ExcelComponent {
 	static className = 'excel__header';
+	public tableTitle: string;
 
 	constructor($root: Dom, options: componentOptions) {
 		super($root, {
 			name: 'Header',
+			listeners: ['input'],
 			...options
 		});
 
 	}
+	init() {
+		super.init();
+	}
+
+	onInput(event: Event) {
+		const target = $(event.target as HTMLElement);
+		this.tableTitle = target.$el.innerText;
+		this.updateStore(changeTableTitle({ value: target.$el.innerText }));
+	}
 
 	toHTML() {
+		this.tableTitle = this.store.state.tableTitle || 'New table';
+
 		return `
-			<input type="text" class="input" value="Новая таблица" />
+			<input type="text" class="input" value="${this.tableTitle}" />
 
 			<div>
 
