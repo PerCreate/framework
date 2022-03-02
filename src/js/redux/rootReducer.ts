@@ -32,6 +32,7 @@ export function rootReducer(state: State, action: action) {
 			if (data.selectedCells?.length) {
 				return { ...state, selectedCells: data.selectedCells };
 			} else {
+				state['selectedCells'] = [];
 				return { ...state, currentText: data.value, currentCell: data.id };
 			}
 			break;
