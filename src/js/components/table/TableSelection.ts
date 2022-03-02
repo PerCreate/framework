@@ -37,15 +37,15 @@ export class TableSelection {
 
 	// $el instanceof DOM === true
 	async select($el: Dom) {
-		this.tableComponent.updateStore(actions.selectCell({ value: $el.$el.innerText }));
-
 		if (this.currentSelectedCell && $el.$el.isEqualNode(this.currentSelectedCell.$el)) {
 			return;
 		}
+
 		this.clear();
 		const $closestCell = $el.closest('.cell');
 		this.group.push($closestCell);
 		this.currentSelectedCell = $closestCell;
+		this.updateStorage();
 		$closestCell.addClass(TableSelection.selected);
 		$closestCell.addClass(TableSelection.groupSelected.last);
 
@@ -69,6 +69,14 @@ export class TableSelection {
 		$cell.click();
 		$cell.setCursorAtEndElem(textContainer);
 		$cell.addClass('focused');
+	}
+
+	updateStorage(isGroupUpdate: boolean = false): void {
+		if (isGroupUpdate) {
+			this.tableComponent.updateStore(actions.selectCell({ selectedCells: this.group.map((cell: Dom) => cell.dataset.id) }));
+		} else {
+			this.tableComponent.updateStore(actions.selectCell({ value: this.currentSelectedCell.$el.innerText, id: this.currentSelectedCell?.dataset?.id }));
+		}
 	}
 
 	/**
@@ -173,6 +181,7 @@ export class TableSelection {
 				this.$tableRoot.off('mouseup', endMoving);
 				this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
 				this.table.focus();
+				this.updateStorage(true);
 			};
 
 			this.$tableRoot.on('mousemove', startMoving);
@@ -180,6 +189,7 @@ export class TableSelection {
 		} else {
 			selectingHandler();
 			this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
+			this.updateStorage(true);
 		}
 	}
 
@@ -192,8 +202,8 @@ export class TableSelection {
 
 		const isLastCell = colIndexCurrentCell === cols;
 		const isLastRow = rowIndexCurrentCell === rows;
-		const isFirstRow = rowIndexCurrentCell === 0;
-		const isFirstCol = colIndexCurrentCell === 0;
+		const isFirstRow = rowIndexCurrentCell === 1;
+		const isFirstCol = colIndexCurrentCell === 1;
 
 		const isSelectedCellFocused = () => {
 			const activeElement = document.activeElement as HTMLElement;
@@ -243,7 +253,7 @@ export class TableSelection {
 				case 'ArrowRight':
 					if (isLastCell) {
 						if (isLastRow) return;
-						nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, 0);
+						nextCell = this.tableComponent.findCell(rowIndexCurrentCell + 1, 1);
 					} else {
 						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell + 1);
 					}
@@ -262,7 +272,7 @@ export class TableSelection {
 				case 'ArrowLeft':
 					if (isFirstCol) {
 						if (!isFirstRow) {
-							nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, colIndexCurrentCell);
+							nextCell = this.tableComponent.findCell(rowIndexCurrentCell - 1, cols);
 						}
 					} else {
 						nextCell = this.tableComponent.findCell(rowIndexCurrentCell, colIndexCurrentCell - 1);

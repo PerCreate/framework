@@ -1,9 +1,13 @@
 
 import { action } from '../redux/actions';
+import { copyDeep } from './utils';
 
 export interface State {
 	cellState?: {
-		[id: string]: { content: string; };
+		[id: string]: { content?: string; };
+	};
+	cellStyles?: {
+		[id: string]: { [style: string]: string; };
 	};
 	colState?: {
 		[id: string]: { [style: string]: string; };
@@ -12,6 +16,8 @@ export interface State {
 		[id: string]: { [style: string]: string; };
 	};
 	currentText: string;
+	currentCell: string;
+	selectedCells: string[];
 }
 
 export class Store {
@@ -38,6 +44,6 @@ export class Store {
 	}
 
 	getState() {
-		return JSON.parse(JSON.stringify(this.state));
+		return copyDeep(this.state);
 	}
 }

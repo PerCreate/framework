@@ -10,6 +10,8 @@ import { storage } from '@/js/core/utils';
 
 const initialState = {
 	colState: {},
+	rowState: {},
+	cellStyles: {}
 };
 
 const storageState = JSON.parse(localStorage.getItem('excel-state')) || initialState;

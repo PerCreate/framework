@@ -9,7 +9,7 @@ function getStyles(state: State['colState'] | State['rowState'], index: number) 
 	var styles = '';
 	if (state[index]) {
 		for (const style in state[index]) {
-			styles += `${style}:${state[index][style]}`;
+			styles += `${style}:${state[index][style]}; `;
 		}
 	}
 	return styles;
@@ -22,21 +22,46 @@ function getContent(state: State['cellState'], index: string) {
 	return '';
 }
 
-function createCell(rowIndex: number, colState = {}, cellState = {}) {
+function getCellState(state: State['cellState'], index: string) {
+	if (state[index] && Object.keys(state[index]).length) {
+		if (Object.keys(state[index]).length === 1) {
+			if (Object.keys(state[index])[0] === 'content') {
+				return '';
+			}
+		}
+
+		var styles = {};
+
+		for (const style in state[index]) {
+			if (style === 'content') continue;
+
+			const newFormatStyle = style.split(/(?=[A-Z])/).join('-').toLowerCase();
+			styles[newFormatStyle] = state[index][style];
+		}
+		return Object.entries(styles).reduce((result, arrStyles) => {
+			result += `${arrStyles.join(':')}; `;
+			return result;
+		}, '');
+	}
+	return '';
+}
+
+function createCell(rowIndex: number, colState = {}, cellState = {}, cellStyles = {}) {
 	rowIndex += 1;
 
 	return (cell: any, index: number) => {
 		index += 1;
 		var id = `${rowIndex}:${index}`;
-		var cellStyles = getStyles(colState, index);
+		var cellStyle = getStyles(colState, index);
 		var content = getContent(cellState, id);
+		var currentCellState = getCellState(cellStyles, id);
 
 		return `<div
 			class="cell" 
 			contenteditable
 			data-cell=${index}
 			data-id=${id}
-			style="${cellStyles}"
+			style="${cellStyle} ${currentCellState}"
 			>
 			${cell}
 			<div class="text" data-cell="text">${content}</div>
@@ -94,7 +119,7 @@ function createRow(index: number, content: any, rowState = {}) {
  * @returns HTML Table element
  */
 export function createTable(rowsCount = 15, state: State) {
-	const { rowState, colState, cellState } = state;
+	const { rowState, colState, cellState, cellStyles } = state;
 	const colsCount = CODES.Z - CODES.A + 1;
 	const rows = [];
 
@@ -111,7 +136,7 @@ export function createTable(rowsCount = 15, state: State) {
 	for (let row = 0; row < rowsCount; row += 1) {
 		const cells = new Array(colsCount)
 			.fill('')
-			.map(createCell(row, colState, cellState))
+			.map(createCell(row, colState, cellState, cellStyles))
 			.join('');
 
 		rows.push(createRow(row + 1, cells, rowState));

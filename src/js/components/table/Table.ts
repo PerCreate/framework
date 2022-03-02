@@ -20,6 +20,7 @@ export class Table extends ExcelComponent {
 		super($root, {
 			name: 'Table',
 			listeners: ['mousedown', 'keydown', 'dblclick'],
+			subscribe: ['cellStyles'],
 			...options
 		});
 	}
@@ -46,9 +47,7 @@ export class Table extends ExcelComponent {
 		this.selection.select($cell);
 		const rows = this.$root.findAll('.row');
 		const cols = rows[1].findAll('.cell');
-		// we will use this numbers for index, so subtract 1, first row hasn't index(col with letters)
-		// so rows - 2
-		this.tableSize = { rows: rows.length - 2, cols: cols.length - 1 };
+		this.tableSize = { rows: rows.length - 1, cols: cols.length };
 		this.$listen(Events.Formula.INPUT, text => this.fillCurrentCell(text));
 		this.$listen(Events.Formula.PRESS_ENTER, () => this.selectCell());
 	}
@@ -71,6 +70,17 @@ export class Table extends ExcelComponent {
 		}
 
 	};
+
+	storeChanged(changes: any) {
+		const cellStyles = changes[Object.keys(changes).filter((change: any) => change === 'cellStyles')[0]];
+
+		if (cellStyles) {
+			this.selection.group.forEach((cell: Dom) => {
+				const idCurrentCell = cell.dataset.id;
+				cellStyles[idCurrentCell] && cell.css(cellStyles[idCurrentCell]);
+			});
+		}
+	}
 
 	selectCell() {
 		// set cursor at the end of textContainer

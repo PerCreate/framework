@@ -1,5 +1,5 @@
 import { Store, State } from "./createStore";
-import { isEqual } from "./utils";
+import { deepMerge, isEqual } from "./utils";
 
 export class StoreSubscriber {
 	private store: Store;
@@ -19,10 +19,10 @@ export class StoreSubscriber {
 					var changes = { [key]: state[key] };
 					components.forEach((component: any) => {
 						if (component.isWatching(key)) {
-							component.storeChanged(changes);
+							setTimeout(() => component.storeChanged(changes), 0);
 						}
 					});
-					this.prevState = { ...this.prevState, ...changes };
+					this.prevState = deepMerge(this.prevState, changes);
 				}
 			});
 		});
