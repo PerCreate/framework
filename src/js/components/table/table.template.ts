@@ -21,7 +21,7 @@ function getContent(state: State['cellState'], index: string) {
 	}
 	return '';
 }
-// working сделать работающую установку стилей из ЛС(сейчас устанавливает alignItems: left, а нужно align-items: left)
+
 function getCellState(state: State['cellState'], index: string) {
 	if (state[index] && Object.keys(state[index]).length) {
 		if (Object.keys(state[index]).length === 1) {
@@ -34,7 +34,9 @@ function getCellState(state: State['cellState'], index: string) {
 
 		for (const style in state[index]) {
 			if (style === 'content') continue;
-			styles[style] = state[index][style];
+
+			const newFormatStyle = style.split(/(?=[A-Z])/).join('-').toLowerCase();
+			styles[newFormatStyle] = state[index][style];
 		}
 		return Object.entries(styles).reduce((result, arrStyles) => {
 			result += `${arrStyles.join(':')}; `;

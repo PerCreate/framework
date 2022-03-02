@@ -73,15 +73,12 @@ export class Table extends ExcelComponent {
 
 	storeChanged(changes: any) {
 		const cellStyles = changes[Object.keys(changes).filter((change: any) => change === 'cellStyles')[0]];
-		const idCurrentCell = this.selection.currentSelectedCell.dataset.id;
 
 		if (cellStyles) {
-			for (const key in cellStyles) {
-				if (idCurrentCell === key) {
-					this.selection.currentSelectedCell.css(cellStyles[key]);
-				}
-			}
-
+			this.selection.group.forEach((cell: Dom) => {
+				const idCurrentCell = cell.dataset.id;
+				cellStyles[idCurrentCell] && cell.css(cellStyles[idCurrentCell]);
+			});
 		}
 	}
 

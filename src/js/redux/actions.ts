@@ -5,6 +5,7 @@ interface data {
 	value?: string;
 	resizeElement?: string;
 	cellStyles?: { [style: string]: string; };
+	selectedCells?: string[];
 }
 
 export interface action {

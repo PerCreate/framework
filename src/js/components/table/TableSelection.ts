@@ -45,7 +45,7 @@ export class TableSelection {
 		const $closestCell = $el.closest('.cell');
 		this.group.push($closestCell);
 		this.currentSelectedCell = $closestCell;
-		this.tableComponent.updateStore(actions.selectCell({ value: $el.$el.innerText, id: this.currentSelectedCell?.dataset?.id }));
+		this.updateStorage();
 		$closestCell.addClass(TableSelection.selected);
 		$closestCell.addClass(TableSelection.groupSelected.last);
 
@@ -69,6 +69,14 @@ export class TableSelection {
 		$cell.click();
 		$cell.setCursorAtEndElem(textContainer);
 		$cell.addClass('focused');
+	}
+
+	updateStorage(isGroupUpdate: boolean = false): void {
+		if (isGroupUpdate) {
+			this.tableComponent.updateStore(actions.selectCell({ selectedCells: this.group.map((cell: Dom) => cell.dataset.id) }));
+		} else {
+			this.tableComponent.updateStore(actions.selectCell({ value: this.currentSelectedCell.$el.innerText, id: this.currentSelectedCell?.dataset?.id }));
+		}
 	}
 
 	/**
@@ -173,6 +181,7 @@ export class TableSelection {
 				this.$tableRoot.off('mouseup', endMoving);
 				this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
 				this.table.focus();
+				this.updateStorage(true);
 			};
 
 			this.$tableRoot.on('mousemove', startMoving);
@@ -180,6 +189,7 @@ export class TableSelection {
 		} else {
 			selectingHandler();
 			this.group[this.group.length - 1].addClass(TableSelection.groupSelected.last);
+			this.updateStorage(true);
 		}
 	}
 

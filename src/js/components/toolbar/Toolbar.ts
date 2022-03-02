@@ -17,9 +17,10 @@ export class Toolbar extends ExcelStateComponent {
 	}
 
 	prepare() {
-		this.initState({});
+		//working сделать устоновку текщих значений при первом рендере(получать id текущей ячейки)
+		const state = this.store.state?.cellStyles['1:1'];
+		this.initState(state);
 	}
-	//working сделать устоновку текщих значений при первом рендере
 	get template() {
 		return createToolbar(this.state);
 	}

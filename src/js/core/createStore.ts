@@ -17,6 +17,7 @@ export interface State {
 	};
 	currentText: string;
 	currentCell: string;
+	selectedCells: string[];
 }
 
 export class Store {
