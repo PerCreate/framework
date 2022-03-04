@@ -38,3 +38,13 @@ export function deepMerge(target: Object, ...sources: any): any {
 	return deepMerge(target, ...sources);
 }
 
+export function convertStyles(style: string) {
+	return style.split(/(?=[A-Z])/).join('-').toLowerCase();
+}
+
+export function parseStyles(styles: Object): string {
+	return Object.entries(styles).reduce((result, arrStyles) => {
+		result += `${arrStyles.join(':')}; `;
+		return result;
+	}, '');
+}

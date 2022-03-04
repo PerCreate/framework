@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
+@import "~normalize.css";
+
+@import "header";
+@import "toolbar";
+@import "formula";
+@import "table";
+@import "dashboard";
+
+.error-block {
+	position: absolute;
+	padding: 10px 15px;
+	top: 100%;
+	left: 0;
+	background-color: rgb(245, 54, 54);
+	color: #fff;
+	border-radius: 5px;
+	z-index: 1;
+}

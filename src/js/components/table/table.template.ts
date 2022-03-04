@@ -1,4 +1,5 @@
 import { State } from "../../core/createStore";
+import { convertStyles, parseStyles } from "../../core/utils";
 
 const CODES = {
 	A: 65,
@@ -35,13 +36,10 @@ function getCellState(state: State['cellState'], index: string) {
 		for (const style in state[index]) {
 			if (style === 'content') continue;
 
-			const newFormatStyle = style.split(/(?=[A-Z])/).join('-').toLowerCase();
+			const newFormatStyle = convertStyles(style);
 			styles[newFormatStyle] = state[index][style];
 		}
-		return Object.entries(styles).reduce((result, arrStyles) => {
-			result += `${arrStyles.join(':')}; `;
-			return result;
-		}, '');
+		return parseStyles(styles);
 	}
 	return '';
 }

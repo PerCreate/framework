@@ -21,6 +21,7 @@ export class Toolbar extends ExcelStateComponent {
 		const state = this.store.state?.cellStyles['1:1'];
 		this.initState(state);
 	}
+
 	get template() {
 		return createToolbar(this.state);
 	}
