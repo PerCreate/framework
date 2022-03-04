@@ -48,3 +48,18 @@ export function parseStyles(styles: Object): string {
 		return result;
 	}, '');
 }
+
+export function debounce(fn: Function, delay: number) {
+	var timeout: number;
+
+	return function () {
+		const context = this;
+		const args = arguments;
+
+		clearTimeout(timeout);
+		timeout = window.setTimeout(() => {
+			console.log('here');
+			fn.apply(context, args);
+		}, delay);
+	};
+}

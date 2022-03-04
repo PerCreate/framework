@@ -6,7 +6,7 @@ import { Table } from '@/js/components/table/Table';
 import './scss/index.scss';
 import { Store } from '@/js/core/createStore';
 import { rootReducer } from '@/js/redux/rootReducer';
-import { storage } from '@/js/core/utils';
+import { storage, debounce } from '@/js/core/utils';
 
 const initialState = {
 	colState: {},
@@ -23,9 +23,11 @@ const storageState = JSON.parse(localStorage.getItem('excel-state')) || initialS
 
 const store = new Store(rootReducer, storageState);
 
-store.subscribe(state => {
+const stateManager = debounce(state => {
 	storage('excel-state', state);
-});
+}, 1000);
+
+store.subscribe(stateManager);
 
 const excel = new Excel('#app', {
 	components: [Header, Toolbar, Formula, Table],
