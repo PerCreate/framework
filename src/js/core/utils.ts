@@ -58,7 +58,6 @@ export function debounce(fn: Function, delay: number) {
 
 		clearTimeout(timeout);
 		timeout = window.setTimeout(() => {
-			console.log('here');
 			fn.apply(context, args);
 		}, delay);
 	};
