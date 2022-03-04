@@ -1,4 +1,4 @@
-import { $, Dom } from "../../core/dom";
+import { Dom } from "../../core/dom";
 import { ExcelComponent, componentOptions } from "../../core/ExcelComponent";
 import { changeTableTitle } from "../../redux/actions";
 
@@ -19,9 +19,9 @@ export class Header extends ExcelComponent {
 	}
 
 	onInput(event: Event) {
-		const target = $(event.target as HTMLElement);
-		this.tableTitle = target.$el.innerText;
-		this.updateStore(changeTableTitle({ value: target.$el.innerText }));
+		const target = event.target as HTMLTextAreaElement;
+		this.tableTitle = target.value;
+		this.updateStore(changeTableTitle({ value: target.value }));
 	}
 
 	toHTML() {
