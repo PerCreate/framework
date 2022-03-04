@@ -11,7 +11,12 @@ import { storage } from '@/js/core/utils';
 const initialState = {
 	colState: {},
 	rowState: {},
-	cellStyles: {}
+	cellStyles: {},
+	currentCell: '',
+	currentText: '',
+	rowState: {},
+	selectedCells: [],
+	tableTitle: 'New table'
 };
 
 const storageState = JSON.parse(localStorage.getItem('excel-state')) || initialState;
